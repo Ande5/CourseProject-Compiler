@@ -5,123 +5,50 @@ namespace LR
 {
     public class UpAnalysis
     {
-        /// <summary>
-        /// Структура символов грамматики
-        /// </summary>
-        public struct MyWord
+        public UpAnalysis(MyRule[] ruleses, MyWord[] words, int[,] table, int countOfRules)
         {
-            public MyWord(int l, string w)
-            {
-                L = l;
-                W = w;
-                T = "";
-            }
-
-            public int L;
-            public string W, T;
+            Rules = ruleses;
+            ArrWords = words;
+            ArrZ = table;
+            CountOfRules = countOfRules;
         }
 
         /// <summary>
-        /// Структура правила
+        /// Делегат, для методов информирования
         /// </summary>
-        public struct MyRule
-        {
-            public MyRule(int p, int[] m)
-            {
-                P = p;
-                M = m;
-            }
-            public int P;
-            public int L => M.Length;
-            public int[] M;
-        }
-
+        /// <param name="text">Текст сообщения</param>
         public delegate void PrintDelegate(string text);
-
+        
         public event PrintDelegate PrintCompileInfo = (str) => { };
         public event PrintDelegate PrintCompileResult = (str) => { };
         public event PrintDelegate PrintMessage = (str) => { };
 
-        public MyWord[] ArrS = new MyWord[1000];
-
         /// <summary>
         /// Коллекция правил, для компиляции
         /// </summary>
-        public MyRule[] Rule =
-        {
-            new MyRule(1, new[] {1, 5, 6, 2, 3, 3}),
-            new MyRule(1, new[] {1, 5, 6, 2, 3, 3, 0}),
-            new MyRule(2, new[] {7, 16}),
-            new MyRule(2, new[] {7, 16, 8, 2, 9}),
-            new MyRule(3, new[] {5}),
-            new MyRule(4, new[] {1, 5}),
-            new MyRule(6, new[] {16}),
-            new MyRule(6, new[] {17}),
-            new MyRule(6, new[] {16, 8, 2, 9}),
-            new MyRule(6, new[] {11, 5}),
-            new MyRule(6, new[] {10, 5}),
-            new MyRule(6, new[] {4, 5}),
-            new MyRule(5, new[] {14, 5}),
-            new MyRule(5, new[] {15, 5}),
-            new MyRule(5, new[] {12, 5}),
-            new MyRule(5, new[] {13, 5})
-        };
+        public MyRule[] Rules;
 
         /// <summary>
         /// Коллекция символов грамматики, для компиляции
         /// </summary>
-        public MyWord[] ArrWords =
-        {
-            new MyWord(1, "S"),
-            new MyWord(1, "X"),
-            new MyWord(1, "Y"),
-            new MyWord(1, "W"),
-            new MyWord(1, "R"),
-            new MyWord(1, "A"),
-            new MyWord(1, "for"),
-            new MyWord(1, "set"),
-            new MyWord(1, "["),
-            new MyWord(1, "]"),
-            new MyWord(1, "not"),
-            new MyWord(1, "sqrt"),
-            new MyWord(1, "neq"),
-            new MyWord(1, "or"),
-            new MyWord(1, "mult"),
-            new MyWord(1, "div"),
-            new MyWord(1, "id"),
-            new MyWord(1, "const"),
-            new MyWord(1, "$")
-        };
-
-        /// <summary>
-        /// Коллекций номеров правил
-        /// </summary>
-        public List<int> Rules = new List<int>();
+        public MyWord[] ArrWords;
 
         /// <summary>
         /// Управляющая таблица восходящего разбора
         /// </summary>
-        public int[,] ArrZ = {
-            {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3},
-            {0, 0, 0, 0, 1, 2, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 0},
-            {0, 1, 0, 2, 0, 0, 0, 1, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-            {2, 1, 0, 2, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3},
-            {0, 0, 0, 0, 1, 2, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 0},
-            {0, 0, 0, 0, 0, 0, 2, 3, 0, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3},
-            {0, 0, 2, 0, 1, 1, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 0},
-            {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0},
-            {0, 0, 2, 0, 1, 1, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 0},
-            {0, 0, 0, 0, 0, 0, 3, 3, 0, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3},
-            {0, 0, 0, 0, 1, 2, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 0},
-            {0, 0, 0, 0, 1, 2, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 0},
-            {0, 0, 0, 0, 1, 2, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 0},
-            {0, 0, 0, 0, 1, 2, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 0},
-            {0, 0, 0, 0, 1, 2, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 0},
-            {0, 0, 0, 0, 1, 2, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 0},
-            {0, 0, 0, 0, 0, 0, 3, 3, 2, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3},
-            {0, 0, 0, 0, 0, 0, 3, 3, 0, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3},
-            {0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}
-        };
+        public int[,] ArrZ;
+
+        /// <summary>
+        /// Количество правил
+        /// </summary>
+        public int CountOfRules;
+
+        /// <summary>
+        /// Коллекций номеров правил
+        /// </summary>
+        public List<int> RulesFounded = new List<int>();
+
+        public MyWord[] ArrS = new MyWord[1000];
 
         public void PrintInfo(int yy, int zz, int xx, MyWord[] splittedWords)
         {
@@ -145,7 +72,7 @@ namespace LR
             i2 = 1;
             while (i2 < xx)
             {
-                s3 = s3 + (Rules[i2] + 1) + " ";
+                s3 = s3 + (RulesFounded[i2] + 1) + " ";
                 i2 = i2 + 1;
             }
             PrintCompileInfo.Invoke(@"Правила:" + s3 + '\n');
@@ -200,7 +127,7 @@ namespace LR
             int go = 0;
             ArrS[0].L = 18;
             ArrS[0].W = "$";
-            PrintInfo(currentSplittedWord, currentMagazine, Rules.Count, splittedWords);
+            PrintInfo(currentSplittedWord, currentMagazine, RulesFounded.Count, splittedWords);
             while (currentSplittedWord <= splittedWords.Length)
             {
                 if (splittedWords[currentSplittedWord].L == 18)
@@ -220,7 +147,7 @@ namespace LR
                     ArrS[currentMagazine].L = splittedWords[currentSplittedWord].L;
                     ArrS[currentMagazine].W = splittedWords[currentSplittedWord].W;
                     currentSplittedWord = currentSplittedWord + 1;
-                    PrintInfo(currentSplittedWord, currentMagazine, Rules.Count, splittedWords);
+                    PrintInfo(currentSplittedWord, currentMagazine, RulesFounded.Count, splittedWords);
                     go = 2;
                 }
                 if ((ArrZ[ArrS[currentMagazine].L, splittedWords[currentSplittedWord].L] == 3) && go != 2 && go != 4)
@@ -232,12 +159,12 @@ namespace LR
                     }
                     for (var p10 = 0; p10 < 16; p10++)
                     {
-                        if (Rule[p10].L == koli && go != 2)
+                        if (Rules[p10].L == koli && go != 2)
                         {
                             int pr11 = 0;
                             for (var pr12 = 0; pr12 < koli; pr12++)
                             {
-                                if (Rule[p10].M[pr12] == ArrS[currentMagazine - koli + 1 + pr12].L)
+                                if (Rules[p10].M[pr12] == ArrS[currentMagazine - koli + 1 + pr12].L)
                                 {
                                     pr11 = pr11 + 1;
                                 }
@@ -246,10 +173,10 @@ namespace LR
                             {
                                 MyCompil(p10, currentMagazine);
                                 currentMagazine = currentMagazine - koli + 1;
-                                ArrS[currentMagazine].L = Rule[p10].P - 1;
+                                ArrS[currentMagazine].L = Rules[p10].P - 1;
                                 ArrS[currentMagazine].W = ArrWords[(ArrS[currentMagazine].L)].W;
-                                Rules.Add(p10);
-                                PrintInfo(currentSplittedWord, currentMagazine, Rules.Count, splittedWords);
+                                RulesFounded.Add(p10);
+                                PrintInfo(currentSplittedWord, currentMagazine, RulesFounded.Count, splittedWords);
                                 go = 2;
                             }
                         }
@@ -258,9 +185,7 @@ namespace LR
                 if (go != 2 && go != 4)
                 {
                     PrintCompileInfo.Invoke(@"Ошибка при выполнении восходящего разбора!");
-                    //richTextBox2.Text = @"Ошибка при выполнении восходящего разбора!";
                     PrintCompileResult.Invoke("");
-                    //textBox2.Text = "";
                     go = 3;
                     currentSplittedWord = 10000;
                     for (int i = 0; i < ArrS.Length; i++)
@@ -270,15 +195,14 @@ namespace LR
                         ArrS[i].W = "";
                     }
                     //splittedWords = null;
-                    for (int i = 0; i < Rules.Count; i++)
+                    for (int i = 0; i < RulesFounded.Count; i++)
                     {
-                        Rules[i] = 0;
+                        RulesFounded[i] = 0;
                     }
                 }
                 if (go != 3)
                 {
                     PrintCompileResult.Invoke(ArrS[1].T);
-                    //textBox2.Text = ArrS[1].T;
                 }
                 if (go == 4)
                 {
@@ -331,7 +255,6 @@ namespace LR
                     return 1;
                 }
                 PrintMessage.Invoke(@"Нужно вводить вещественные" + '\n' + @" числа с порядком!" + '\r' + @"Ошибка --> " + str.Substring(startPos, endPos + 1 - startPos));
-                //MessageBox.Show(@"Нужно вводить вещественные" + '\n' + @" числа с порядком!" + '\r' + @"Ошибка --> " + str.Substring(startPos, endPos + 1 - startPos));
                 return -1;
             }
             return 0;
@@ -407,13 +330,11 @@ namespace LR
                                     {
                                         fail = true;
                                         PrintMessage.Invoke(@"Длина идентификатора не может быть больше 8 символов!" + '\n' + @"Ошибка --> " + str.Substring(nach, i + 1 - nach));
-                                        //MessageBox.Show(@"Длина идентификатора не может быть больше 8 символов!" + '\n' + @"Ошибка --> " + str.Substring(nach, i + 1 - nach));
                                     }
                                     if ((str.Substring(nach + 1, i - nach - 1)).Length == 0)
                                     {
                                         fail = true;
                                         PrintMessage.Invoke(@"Длина идентификатора не может быть меньше 0 символов!" + '\n' + @"Сивмол № " + (i + 1).ToString() + @" является пробелом.");
-                                        //MessageBox.Show(@"Длина идентификатора не может быть меньше 0 символов!" + '\n' + @"Сивмол № " + (i + 1).ToString() + @" является пробелом.");
                                     }
                                 }
                             }
@@ -445,7 +366,7 @@ namespace LR
                 ArrS[i].T = "";
                 ArrS[i].W = "";
             }
-            Rules.Clear();
+            RulesFounded.Clear();
 
             MyWord[] words = Up(str);
             if (words != null)
