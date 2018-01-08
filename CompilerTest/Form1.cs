@@ -6,6 +6,9 @@ namespace Compiler
 {
     public partial class Form1 : Form
     {
+        /// <summary>
+        /// Структура символов грамматики
+        /// </summary>
         public struct MyWord
         {
             public MyWord(int l, string w)
@@ -19,6 +22,9 @@ namespace Compiler
             public string W, T;
         }
 
+        /// <summary>
+        /// Структура правила
+        /// </summary>
         public struct MyRule
         {
             public MyRule(int p, int[] m)
@@ -31,16 +37,16 @@ namespace Compiler
             public int[] M;
         }
 
-        public struct MyUpStr
-        {
-            public int I;
-            public string Name;
-        }
-
+        /// <summary>
+        /// Коллекция строк, которые были получены в результате парсинга строки
+        /// </summary>
         public List<MyWord> SplittedWords = new List<MyWord>();
 
         public MyWord[] ArrS = new MyWord[1000];
 
+        /// <summary>
+        /// Коллекция правил, для компиляции
+        /// </summary>
         public MyRule[] Rule =
         {
             new MyRule(1, new[] {1, 5, 6, 2, 3, 3}),
@@ -61,6 +67,9 @@ namespace Compiler
             new MyRule(5, new[] {13, 5})
         };
 
+        /// <summary>
+        /// Коллекция символов грамматики, для компиляции
+        /// </summary>
         public MyWord[] ArrWords =
         {
             new MyWord(1, "S"),
@@ -82,10 +91,16 @@ namespace Compiler
             new MyWord(1, "id"),
             new MyWord(1, "const"),
             new MyWord(1, "$")
-        };
-
+        };       
+        
+        /// <summary>
+        /// Коллекций номеров правил
+        /// </summary>
         public List<int> Rules = new List<int>();
 
+        /// <summary>
+        /// Управляющая таблица восходящего разбора
+        /// </summary>
         public int[,] ArrZ = {
             {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3},
             {0, 0, 0, 0, 1, 2, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 0},
@@ -136,7 +151,7 @@ namespace Compiler
             i2 = 1;
             while (i2 < xx)
             {
-                s3 = s3 + (Rules[i2] + 1).ToString() + " ";
+                s3 = s3 + (Rules[i2] + 1) + " ";
                 i2 = i2 + 1;
             }
             richTextBox2.Text += @"Правила:" + s3 + '\n';
@@ -290,31 +305,49 @@ namespace Compiler
             return pr2 == 0 ? 0 : 1;
         }
 
-        public int IsThisNumber(string str1, int nach1, int kon1)
+        /// <summary>
+        /// Проверяет значение на тип
+        /// </summary>
+        /// <param name="str">Строка, в которой осуществляется поиск</param>
+        /// <param name="startPos">Начальная позиция, для поиска</param>
+        /// <param name="endPos">Конечная позиция, для поиска</param>
+        /// <returns></returns>
+        public int IsThisNumber(string str, int startPos, int endPos)
         {
-            if (str1.Substring(nach1, kon1 + 1 - nach1) == " true" || str1.Substring(nach1, kon1 + 1 - nach1) == " false")
+            //Проверка булевых переменных
+            if (str.Substring(startPos, endPos + 1 - startPos) == " true" || str.Substring(startPos, endPos + 1 - startPos) == " false")
             {
-                SplittedWords.Add(new MyWord(17, str1.Substring(nach1, kon1 + 1 - nach1)));
+                SplittedWords.Add(new MyWord(17, str.Substring(startPos, endPos + 1 - startPos)));
                 return 1;
             }
-            if (IsNumber(str1, "0123456789", nach1) == 1)
+            //Проверка на число
+            if (IsNumber(str, "0123456789", startPos) == 1)
             {
-                int pr3 = 0;
-                for (var jjj = nach1; jjj < kon1; jjj++)
+                int srchLength = 0;
+                for (var i = startPos; i < endPos; i++)
                 {
-                    if (IsNumber(str1, "0123456789.Ee-", jjj) == 1) pr3 = pr3 + 1;
+                    if (IsNumber(str, "0123456789.Ee-", i) == 1) srchLength = srchLength + 1;
                 }
-                if (pr3 == kon1 - nach1)
+                if (srchLength == endPos - startPos)
                 {
-                    SplittedWords.Add(new MyWord(17, str1.Substring(nach1, kon1 + 1 - nach1)));
+                    SplittedWords.Add(new MyWord(17, str.Substring(startPos, endPos + 1 - startPos)));
 
                     return 1;
                 }
-                MessageBox.Show(@"Нужно вводить вещественные" + '\n' + @" числа с порядком!" + '\r' + @"Ошибка --> " + str1.Substring(nach1, kon1 + 1 - nach1));
+                MessageBox.Show(@"Нужно вводить вещественные" + '\n' + @" числа с порядком!" + '\r' + @"Ошибка --> " + str.Substring(startPos, endPos + 1 - startPos));
                 return -1;
             }
             return 0;
         }
+
+        /// <summary>
+        /// Метод поиска (парсинга) входной строки
+        /// Заполняется массив <see cref="ArrWords"/> нашими символами грамматики (:=, if, и т.д.)
+        /// </summary>
+        /// <param name="str">Строка, в которой осуществляется поиск</param>
+        /// <param name="startPos">Начальная позиция, для поиска</param>
+        /// <param name="endPos">Конечная позиция, для поиска</param>
+        /// <returns> Возвращяется номер символа в грамматике </returns>
         public int IsThisOperator(string str, int startPos, int endPos)
         {
             if (str[startPos] == ' ') startPos += 1;
@@ -322,12 +355,12 @@ namespace Compiler
             {
                 if (endPos - startPos + 1 == (ArrWords[i].W).Length)
                 {
-                    int kol = 0;
+                    int srchLength = 0;
                     for (var j = 1; j <= (ArrWords[i].W).Length; j++)
                     {
-                        if (str[startPos + j - 1] == ArrWords[i].W[j - 1]) kol = kol + 1;
+                        if (str[startPos + j - 1] == ArrWords[i].W[j - 1]) srchLength = srchLength + 1;
                     }
-                    if (endPos - startPos + 1 == kol)
+                    if (endPos - startPos + 1 == srchLength)
                     {
                         SplittedWords.Add(new MyWord(i, ArrWords[i].W));
                         return i;
@@ -337,22 +370,28 @@ namespace Compiler
             return 0;
         }
 
-        public void Up()
+        /// <summary>
+        /// Парсит входную строку и вызывает алгоритм
+        /// </summary>
+        /// <param name="str">Строка, для компиляции</param>
+        public void Up(string str)
         {
-            int k = 0;
             ArrS[1].T = "";
-            richTextBox2.Clear();
-            textBox2.Clear();
-            string str = textBox1.Text;
+
             str += " ";
             int nach = 0;
             int probel = 1;
+
+            // Флаг ошибки при компиляции
+            bool fail = false;
+
             for (var i = 0; i < str.Length; i++)
             {
                 if (str[i] == ' ')
                     if (probel == 0)
                     {
                         probel = 1;
+                        // Если вернулся 0, то будет производиться поиск на число или булевский тип
                         if (IsThisOperator(str, nach, i - 1) == 0)
                         {
                             int dop1 = IsThisNumber(str, nach, i - 1);
@@ -366,29 +405,29 @@ namespace Compiler
                                 {
                                     if ((str.Substring(nach + 1, i - nach - 1)).Length > 8)
                                     {
-                                        k = 1;
+                                        fail = true;
                                         MessageBox.Show(@"Длина идентификатора не может быть больше 8 символов!" + '\n' + @"Ошибка --> " + str.Substring(nach, i + 1 - nach));
                                     }
                                     if ((str.Substring(nach + 1, i - nach - 1)).Length == 0)
                                     {
-                                        k = 1;
+                                        fail = true;
                                         MessageBox.Show(@"Длина идентификатора не может быть меньше 0 символов!" + '\n' + @"Сивмол № " + (i + 1).ToString() + @" является пробелом.");
                                     }
                                 }
                             }
                             if (dop1 == -1)
                             {
-                                k = 1;
+                                fail = true;
                             }
                         }
                     }
-                if (k != 1)
+                if (!fail)
                 {
                     if (probel == 1) nach = i;
                     probel = 0;
                 }
             }
-            if (k != 1)
+            if (!fail)
             {
                 SplittedWords.Add(new MyWord(18, "$"));
                 Algorithm();
@@ -405,7 +444,12 @@ namespace Compiler
             }
             SplittedWords.Clear();
             Rules.Clear();
-            Up();
+
+            richTextBox2.Clear();
+            textBox2.Clear();
+
+            string str = textBox1.Text;
+            Up(str);
         }
 
         private void richTextBox1_TextChanged(object sender, EventArgs e)
