@@ -295,14 +295,14 @@ namespace Compiler
                 go = 0;
             }
         }
-        public int IsNumber(string str2, string dopstr, int k)
+        public bool IsNumber(string str2, string dopstr, int k)
         {
             int pr2 = 0;
             for (var i = 0; i < dopstr.Length; i++)
             {
                 if (str2[k + 1] == i) pr2 = pr2 + 1;
             }
-            return pr2 == 0 ? 0 : 1;
+            return pr2 == 0 ? false : true;
         }
 
         /// <summary>
@@ -321,12 +321,13 @@ namespace Compiler
                 return 1;
             }
             //Проверка на число
-            if (IsNumber(str, "0123456789", startPos) == 1)
+            if (IsNumber(str, "0123456789", startPos))
             {
                 int srchLength = 0;
                 for (var i = startPos; i < endPos; i++)
                 {
-                    if (IsNumber(str, "0123456789.Ee-", i) == 1) srchLength = srchLength + 1;
+                    if (IsNumber(str, "0123456789.Ee-", i))
+                        srchLength = srchLength + 1;
                 }
                 if (srchLength == endPos - startPos)
                 {
