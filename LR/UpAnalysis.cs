@@ -1,8 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace LR
 {
@@ -39,28 +36,11 @@ namespace LR
             public int[] M;
         }
 
-        public UpAnalysis()
-        {
-            for (var i = 0; i < ArrS.Length; i++)
-            {
-                ArrS[i].L = 0;
-                ArrS[i].T = "";
-                ArrS[i].W = "";
-            }
-            SplittedWords.Clear();
-            Rules.Clear();
-        }
-
         public delegate void PrintDelegate(string text);
 
         public event PrintDelegate PrintCompileInfo = (str) => { };
         public event PrintDelegate PrintCompileResult = (str) => { };
         public event PrintDelegate PrintMessage = (str) => { };
-
-        /// <summary>
-        /// Коллекция строк, которые были получены в результате парсинга строки
-        /// </summary>
-        public List<MyWord> SplittedWords = new List<MyWord>();
 
         public MyWord[] ArrS = new MyWord[1000];
 
@@ -143,17 +123,16 @@ namespace LR
             {0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}
         };
 
-        public void PrintInfo(int yy, int zz, int xx)
+        public void PrintInfo(int yy, int zz, int xx, MyWord[] splittedWords)
         {
             string s1 = "";
             int i2 = yy;
-            while (i2 < SplittedWords.Count)
+            while (i2 < splittedWords.Length)
             {
-                s1 = s1 + ArrWords[SplittedWords[i2].L].W + " ";
+                s1 = s1 + ArrWords[splittedWords[i2].L].W + " ";
                 i2 = i2 + 1;
             }
             PrintCompileInfo.Invoke(@"Строка:" + s1 + '\n');
-            //richTextBox2.Text += @"Строка:" + s1 + '\n';
             string s2 = "";
             i2 = 0;
             while (i2 <= zz)
@@ -162,7 +141,6 @@ namespace LR
                 i2 = i2 + 1;
             }
             PrintCompileInfo.Invoke(@"Магазин:" + s2 + '\n');
-            //richTextBox2.Text += @"Магазин:" + s2 + '\n';
             string s3 = "";
             i2 = 1;
             while (i2 < xx)
@@ -172,8 +150,6 @@ namespace LR
             }
             PrintCompileInfo.Invoke(@"Правила:" + s3 + '\n');
             PrintCompileInfo.Invoke(@"      " + '\n');
-            //richTextBox2.Text += @"Правила:" + s3 + '\n';
-            //richTextBox2.Text += @"      " + '\n';
         }
 
         /// <summary>
@@ -217,36 +193,37 @@ namespace LR
 
         }
 
-        public void Algorithm()
+        public void Algorithm(MyWord[] splittedWords)
         {
             int currentSplittedWord = 0;
             int currentMagazine = 0;
             int go = 0;
             ArrS[0].L = 18;
             ArrS[0].W = "$";
-            PrintInfo(currentSplittedWord, currentMagazine, Rules.Count);
-            while (currentSplittedWord <= SplittedWords.Count)
+            PrintInfo(currentSplittedWord, currentMagazine, Rules.Count, splittedWords);
+            while (currentSplittedWord <= splittedWords.Length)
             {
-                if (SplittedWords[currentSplittedWord].L == 18)
+                if (splittedWords[currentSplittedWord].L == 18)
                 {
                     if (currentMagazine == 1)
                     {
                         if ((ArrS[currentMagazine].L == 0) && (ArrS[currentMagazine - 1].L == 18))
                         {
+                            // Тут можно делать выход из алгоритма
                             go = 4;
                         }
                     }
                 }
-                if (((ArrZ[ArrS[currentMagazine].L, SplittedWords[currentSplittedWord].L] == 1) && go != 4) || ((ArrZ[ArrS[currentMagazine].L, SplittedWords[currentSplittedWord].L] == 2) && go != 4))
+                if (((ArrZ[ArrS[currentMagazine].L, splittedWords[currentSplittedWord].L] == 1) && go != 4) || ((ArrZ[ArrS[currentMagazine].L, splittedWords[currentSplittedWord].L] == 2) && go != 4))
                 {
                     currentMagazine = currentMagazine + 1;
-                    ArrS[currentMagazine].L = SplittedWords[currentSplittedWord].L;
-                    ArrS[currentMagazine].W = SplittedWords[currentSplittedWord].W;
+                    ArrS[currentMagazine].L = splittedWords[currentSplittedWord].L;
+                    ArrS[currentMagazine].W = splittedWords[currentSplittedWord].W;
                     currentSplittedWord = currentSplittedWord + 1;
-                    PrintInfo(currentSplittedWord, currentMagazine, Rules.Count);
+                    PrintInfo(currentSplittedWord, currentMagazine, Rules.Count, splittedWords);
                     go = 2;
                 }
-                if ((ArrZ[ArrS[currentMagazine].L, SplittedWords[currentSplittedWord].L] == 3) && go != 2 && go != 4)
+                if ((ArrZ[ArrS[currentMagazine].L, splittedWords[currentSplittedWord].L] == 3) && go != 2 && go != 4)
                 {
                     int koli = 0;
                     while (ArrZ[ArrS[currentMagazine - koli].L, ArrS[currentMagazine - koli + 1].L] != 1)
@@ -272,7 +249,7 @@ namespace LR
                                 ArrS[currentMagazine].L = Rule[p10].P - 1;
                                 ArrS[currentMagazine].W = ArrWords[(ArrS[currentMagazine].L)].W;
                                 Rules.Add(p10);
-                                PrintInfo(currentSplittedWord, currentMagazine, Rules.Count);
+                                PrintInfo(currentSplittedWord, currentMagazine, Rules.Count, splittedWords);
                                 go = 2;
                             }
                         }
@@ -292,7 +269,7 @@ namespace LR
                         ArrS[i].T = "";
                         ArrS[i].W = "";
                     }
-                    SplittedWords.Clear();
+                    //splittedWords = null;
                     for (int i = 0; i < Rules.Count; i++)
                     {
                         Rules[i] = 0;
@@ -305,18 +282,9 @@ namespace LR
                 }
                 if (go == 4)
                 {
+                    // финальная точка
+                    // очистка нафиг не нужна
                     currentSplittedWord = 10000;
-                    for (int i = 0; i < ArrS.Length; i++)
-                    {
-                        ArrS[i].L = 0;
-                        ArrS[i].T = "";
-                        ArrS[i].W = "";
-                    }
-                    SplittedWords.Clear();
-                    for (int i = 0; i < Rules.Count; i++)
-                    {
-                        Rules[i] = 0;
-                    }
                 }
                 go = 0;
             }
@@ -337,13 +305,14 @@ namespace LR
         /// <param name="str">Строка, в которой осуществляется поиск</param>
         /// <param name="startPos">Начальная позиция, для поиска</param>
         /// <param name="endPos">Конечная позиция, для поиска</param>
+        /// <param name="splittedWords"></param>
         /// <returns></returns>
-        public int IsThisNumber(string str, int startPos, int endPos)
+        public int IsThisNumber(string str, int startPos, int endPos, List<MyWord> splittedWords)
         {
             //Проверка булевых переменных
             if (str.Substring(startPos, endPos + 1 - startPos) == " true" || str.Substring(startPos, endPos + 1 - startPos) == " false")
             {
-                SplittedWords.Add(new MyWord(17, str.Substring(startPos, endPos + 1 - startPos)));
+                splittedWords.Add(new MyWord(17, str.Substring(startPos, endPos + 1 - startPos)));
                 return 1;
             }
             //Проверка на число
@@ -357,7 +326,7 @@ namespace LR
                 }
                 if (srchLength == endPos - startPos)
                 {
-                    SplittedWords.Add(new MyWord(17, str.Substring(startPos, endPos + 1 - startPos)));
+                    splittedWords.Add(new MyWord(17, str.Substring(startPos, endPos + 1 - startPos)));
 
                     return 1;
                 }
@@ -375,8 +344,9 @@ namespace LR
         /// <param name="str">Строка, в которой осуществляется поиск</param>
         /// <param name="startPos">Начальная позиция, для поиска</param>
         /// <param name="endPos">Конечная позиция, для поиска</param>
+        /// <param name="splittedWords"></param>
         /// <returns> Возвращяется номер символа в грамматике </returns>
-        public int IsThisOperator(string str, int startPos, int endPos)
+        public int IsThisOperator(string str, int startPos, int endPos, List<MyWord> splittedWords)
         {
             if (str[startPos] == ' ') startPos += 1;
             for (var i = 6; i < 16; i++)
@@ -390,7 +360,7 @@ namespace LR
                     }
                     if (endPos - startPos + 1 == srchLength)
                     {
-                        SplittedWords.Add(new MyWord(i, ArrWords[i].W));
+                        splittedWords.Add(new MyWord(i, ArrWords[i].W));
                         return i;
                     }
                 }
@@ -402,9 +372,11 @@ namespace LR
         /// Парсит входную строку и вызывает алгоритм
         /// </summary>
         /// <param name="str">Строка, для компиляции</param>
-        public void Up(string str)
+        public MyWord[] Up(string str)
         {
-            ArrS[1].T = "";
+            // Коллекция строк, которые были получены в результате парсинга строки
+            List<MyWord> splittedWords = new List<MyWord>();
+        ArrS[1].T = "";
 
             str += " ";
             int nach = 0;
@@ -420,14 +392,14 @@ namespace LR
                     {
                         probel = 1;
                         // Если вернулся 0, то будет производиться поиск на число или булевский тип
-                        if (IsThisOperator(str, nach, i - 1) == 0)
+                        if (IsThisOperator(str, nach, i - 1, splittedWords) == 0)
                         {
-                            int dop1 = IsThisNumber(str, nach, i - 1);
+                            int dop1 = IsThisNumber(str, nach, i - 1, splittedWords);
                             if (dop1 == 0)
                             {
                                 if ((str.Substring(nach + 1, i - nach - 1)).Length <= 8 && (str.Substring(nach + 1, i - nach - 1)).Length > 0)
                                 {
-                                    SplittedWords.Add(new MyWord(16, str.Substring(nach, i + 1 - nach)));
+                                    splittedWords.Add(new MyWord(16, str.Substring(nach, i + 1 - nach)));
                                 }
                                 else
                                 {
@@ -459,14 +431,28 @@ namespace LR
             }
             if (!fail)
             {
-                SplittedWords.Add(new MyWord(18, "$"));
-                Algorithm();
+                splittedWords.Add(new MyWord(18, "$"));
+                return splittedWords.ToArray();
             }
+            return null;
         }
 
         public void Run(string str)
         {
-            Up(str);
+            for (var i = 0; i < ArrS.Length; i++)
+            {
+                ArrS[i].L = 0;
+                ArrS[i].T = "";
+                ArrS[i].W = "";
+            }
+            Rules.Clear();
+
+            MyWord[] words = Up(str);
+            if (words != null)
+            {
+                Algorithm(words);
+            }
+            
         }
     }
 }
