@@ -6,7 +6,6 @@ namespace Compiler
 {
     public partial class Form1 : Form
     {
-        public string Str = "";
         public struct MyWord
         {
             public MyWord(int l, string w)
@@ -19,6 +18,7 @@ namespace Compiler
             public int L;
             public string W, T;
         }
+
         public struct MyRule
         {
             public MyRule(int p, int[] m)
@@ -30,13 +30,12 @@ namespace Compiler
             public int L => M.Length;
             public int[] M;
         }
+
         public struct MyUpStr
         {
             public int I;
             public string Name;
         }
-
-        public int IndS;
 
         public List<MyWord> SplittedWords = new List<MyWord>();
 
@@ -258,7 +257,6 @@ namespace Compiler
                     {
                         Rules[i] = 0;
                     }
-                    Str = "";
                 }
                 if (go != 3)
                 {
@@ -278,7 +276,6 @@ namespace Compiler
                     {
                         Rules[i] = 0;
                     }
-                    Str = "";
                 }
                 go = 0;
             }
@@ -318,7 +315,6 @@ namespace Compiler
                 else
                 {
                     MessageBox.Show(@"Нужно вводить вещественные" + '\n' + @" числа с порядком!" + '\r' + @"Ошибка --> " + str1.Substring(nach1, kon1 + 1 - nach1));
-                    Str = "";
                     return -1;
                 }
             }
@@ -355,7 +351,7 @@ namespace Compiler
             ArrS[1].T = "";
             richTextBox2.Clear();
             textBox2.Clear();
-            Str += textBox1.Text;
+            string Str = textBox1.Text;
             Str += " ";
             int nach = 0;
             int probel = 1;
@@ -409,7 +405,7 @@ namespace Compiler
         
         private void button1_Click(object sender, EventArgs e)
         {
-            Str = "";
+
             
             for (int i = 0; i < ArrS.Length; i++)
             {
@@ -419,7 +415,6 @@ namespace Compiler
             }
             SplittedWords.Clear();
             Rules.Clear();
-            Str = "";
             Up();
         }
 
