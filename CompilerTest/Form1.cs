@@ -287,8 +287,7 @@ namespace Compiler
             {
                 if (str2[k + 1] == i) pr2 = pr2 + 1;
             }
-            if (pr2 == 0) return 0;
-            else return 1;
+            return pr2 == 0 ? 0 : 1;
         }
 
         public int IsThisNumber(string str1, int nach1, int kon1)
@@ -298,7 +297,6 @@ namespace Compiler
                 SplittedWords.Add(new MyWord(17, str1.Substring(nach1, kon1 + 1 - nach1)));
                 return 1;
             }
-            else
             if (IsNumber(str1, "0123456789", nach1) == 1)
             {
                 int pr3 = 0;
@@ -312,16 +310,10 @@ namespace Compiler
 
                     return 1;
                 }
-                else
-                {
-                    MessageBox.Show(@"Нужно вводить вещественные" + '\n' + @" числа с порядком!" + '\r' + @"Ошибка --> " + str1.Substring(nach1, kon1 + 1 - nach1));
-                    return -1;
-                }
+                MessageBox.Show(@"Нужно вводить вещественные" + '\n' + @" числа с порядком!" + '\r' + @"Ошибка --> " + str1.Substring(nach1, kon1 + 1 - nach1));
+                return -1;
             }
-            else
-            {
-                return 0;
-            }
+            return 0;
         }
         public int IsThisOperator(string str, int startPos, int endPos)
         {
@@ -351,33 +343,33 @@ namespace Compiler
             ArrS[1].T = "";
             richTextBox2.Clear();
             textBox2.Clear();
-            string Str = textBox1.Text;
-            Str += " ";
+            string str = textBox1.Text;
+            str += " ";
             int nach = 0;
             int probel = 1;
-            for (var i = 0; i < Str.Length; i++)
+            for (var i = 0; i < str.Length; i++)
             {
-                if (Str[i] == ' ')
+                if (str[i] == ' ')
                     if (probel == 0)
                     {
                         probel = 1;
-                        if (IsThisOperator(Str, nach, i - 1) == 0)
+                        if (IsThisOperator(str, nach, i - 1) == 0)
                         {
-                            int dop1 = IsThisNumber(Str, nach, i - 1);
+                            int dop1 = IsThisNumber(str, nach, i - 1);
                             if (dop1 == 0)
                             {
-                                if ((Str.Substring(nach + 1, i - nach - 1)).Length <= 8 && (Str.Substring(nach + 1, i - nach - 1)).Length > 0)
+                                if ((str.Substring(nach + 1, i - nach - 1)).Length <= 8 && (str.Substring(nach + 1, i - nach - 1)).Length > 0)
                                 {
-                                    SplittedWords.Add(new MyWord(16, Str.Substring(nach, i + 1 - nach)));
+                                    SplittedWords.Add(new MyWord(16, str.Substring(nach, i + 1 - nach)));
                                 }
                                 else
                                 {
-                                    if ((Str.Substring(nach + 1, i - nach - 1)).Length > 8)
+                                    if ((str.Substring(nach + 1, i - nach - 1)).Length > 8)
                                     {
                                         k = 1;
-                                        MessageBox.Show(@"Длина идентификатора не может быть больше 8 символов!" + '\n' + @"Ошибка --> " + Str.Substring(nach, i + 1 - nach));
+                                        MessageBox.Show(@"Длина идентификатора не может быть больше 8 символов!" + '\n' + @"Ошибка --> " + str.Substring(nach, i + 1 - nach));
                                     }
-                                    if ((Str.Substring(nach + 1, i - nach - 1)).Length == 0)
+                                    if ((str.Substring(nach + 1, i - nach - 1)).Length == 0)
                                     {
                                         k = 1;
                                         MessageBox.Show(@"Длина идентификатора не может быть меньше 0 символов!" + '\n' + @"Сивмол № " + (i + 1).ToString() + @" является пробелом.");
@@ -404,10 +396,8 @@ namespace Compiler
         }
         
         private void button1_Click(object sender, EventArgs e)
-        {
-
-            
-            for (int i = 0; i < ArrS.Length; i++)
+        {        
+            for (var i = 0; i < ArrS.Length; i++)
             {
                 ArrS[i].L = 0;
                 ArrS[i].T = "";
