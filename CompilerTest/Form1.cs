@@ -44,8 +44,50 @@ namespace Compiler
 
         //public MyWord[] Arr = new MyWord[1000];
         public MyWord[] ArrS = new MyWord[1000];
-        public MyRule[] Rule = new MyRule[16];
-        public MyWord[] ArrWords = new MyWord[19];
+
+        public MyRule[] Rule =
+        {
+            new MyRule(1, new[] {1, 5, 6, 2, 3, 3}),
+            new MyRule(1, new[] {1, 5, 6, 2, 3, 3, 0}),
+            new MyRule(2, new[] {7, 16}),
+            new MyRule(2, new[] {7, 16, 8, 2, 9}),
+            new MyRule(3, new[] {5}),
+            new MyRule(4, new[] {1, 5}),
+            new MyRule(6, new[] {16}),
+            new MyRule(6, new[] {17}),
+            new MyRule(6, new[] {16, 8, 2, 9}),
+            new MyRule(6, new[] {11, 5}),
+            new MyRule(6, new[] {10, 5}),
+            new MyRule(6, new[] {4, 5}),
+            new MyRule(5, new[] {14, 5}),
+            new MyRule(5, new[] {15, 5}),
+            new MyRule(5, new[] {12, 5}),
+            new MyRule(5, new[] {13, 5})
+        };
+
+        public MyWord[] ArrWords =
+        {
+            new MyWord(1, "S"),
+            new MyWord(1, "X"),
+            new MyWord(1, "Y"),
+            new MyWord(1, "W"),
+            new MyWord(1, "R"),
+            new MyWord(1, "A"),
+            new MyWord(1, "for"),
+            new MyWord(1, "set"),
+            new MyWord(1, "["),
+            new MyWord(1, "]"),
+            new MyWord(1, "not"),
+            new MyWord(1, "sqrt"),
+            new MyWord(1, "neq"),
+            new MyWord(1, "or"),
+            new MyWord(1, "mult"),
+            new MyWord(1, "div"),
+            new MyWord(1, "id"),
+            new MyWord(1, "const"),
+            new MyWord(1, "$")
+        };
+
         public int[] Rules = new int[1000];
 
         public int[,] ArrZ = {
@@ -80,43 +122,10 @@ namespace Compiler
             InitializeComponent();
             textBox1.Text = @"set k 6E-1 for neq div k 9E-3 5E-2 set k mult k 3E-15 set x [ mult k k ] div mult x [ div k k ] or y y mult c sqrt z [ k ] set i 5E-1 for neq i 4E-17 set i div i 5E-8 set y [ div i mult i i ] div mult x [ div i i ] mult 5E-2 sqrt y [ i ] not y [ i ]";
 
-            Rule[0] = new MyRule(1, new[] {1, 5, 6, 2, 3, 3});
-            Rule[1] = new MyRule(1, new[] {1, 5, 6, 2, 3, 3, 0});
-            Rule[2] = new MyRule(2, new[] { 7, 16 });
-            Rule[3] = new MyRule(2, new[] {7, 16, 8, 2, 9});
-            Rule[4] = new MyRule(3, new[] { 5 });
-            Rule[5] = new MyRule(4, new[] { 1, 5 });
-            Rule[6] = new MyRule(6, new[] { 16 });
-            Rule[7] = new MyRule(6, new[] { 17 });
-            Rule[8] = new MyRule(6, new[] { 16, 8, 2, 9 });
-            Rule[9] = new MyRule(6, new[] { 11, 5 });
-            Rule[10] = new MyRule(6, new[] { 10, 5 });
-            Rule[11] = new MyRule(6, new[] { 4, 5 });
-            Rule[12] = new MyRule(5, new[] { 14, 5 });
-            Rule[13] = new MyRule(5, new[] { 15, 5 });
-            Rule[14] = new MyRule(5, new[] { 12, 5 });
-            Rule[15] = new MyRule(5, new[] { 13, 5 });
+            
 
 
-            ArrWords[0] = new MyWord(1, "S");
-            ArrWords[1] = new MyWord(1, "X");
-            ArrWords[2] = new MyWord(1, "Y");
-            ArrWords[3] = new MyWord(1, "W");
-            ArrWords[4] = new MyWord(1, "R");
-            ArrWords[5] = new MyWord(1, "A");
-            ArrWords[6] = new MyWord(1, "for");
-            ArrWords[7] = new MyWord(1, "set");
-            ArrWords[8] = new MyWord(1, "[");
-            ArrWords[9] = new MyWord(1, "]");
-            ArrWords[10] = new MyWord(1, "not");
-            ArrWords[11] = new MyWord(1, "sqrt");
-            ArrWords[12] = new MyWord(1, "neq");
-            ArrWords[13] = new MyWord(1, "or");
-            ArrWords[14] = new MyWord(1, "mult");
-            ArrWords[15] = new MyWord(1, "div");
-            ArrWords[16] = new MyWord(1, "id");
-            ArrWords[17] = new MyWord(1, "const");
-            ArrWords[18] = new MyWord(1, "$");
+            
         }
 
         public void Print(int yy, int zz, int xx)
