@@ -158,38 +158,43 @@ namespace Compiler
             richTextBox2.Text += @"      " + '\n';
         }
 
-        public void MyCompil(int pp, int ts1)
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="ruleNumber">Номер правила</param>
+        /// <param name="ts1"></param>
+        public void MyCompil(int ruleNumber, int ts1)
         {
-            pp = pp + 1;
-            if (pp == 1)
+            ruleNumber = ruleNumber + 1;
+            if (ruleNumber == 1)
                 ArrS[ts1 - 5].T = "for ( " + ArrS[ts1 - 5].T + ArrS[ts1 - 4].T + "; " + ArrS[ts1 - 2].T + "; " + ArrS[ts1 - 1].T + " ) {" + ArrS[ts1].T + "} ;";
-            if (pp == 2)
+            if (ruleNumber == 2)
                 ArrS[ts1 - 6].T = "for ( " + ArrS[ts1 - 6].T + ArrS[ts1 - 5].T + "; " + ArrS[ts1 - 3].T + "; " + ArrS[ts1 - 2].T + " ) {" + ArrS[ts1 - 1].T + "} ;" + Environment.NewLine + ArrS[ts1].T;
-            if (pp == 4)
+            if (ruleNumber == 4)
                 ArrS[ts1 - 4].T = ArrS[ts1 - 3].W + "[ " + ArrS[ts1 - 1].T + " ] = ";
-            if (pp == 3)
+            if (ruleNumber == 3)
                 ArrS[ts1 - 1].T = ArrS[ts1].W + " = ";
-            if (pp == 6)
+            if (ruleNumber == 6)
                 ArrS[ts1 - 1].T = ArrS[ts1 - 1].T + " " + ArrS[ts1].T;
-            if (pp == 8)
+            if (ruleNumber == 8)
                 ArrS[ts1].T = ArrS[ts1].W;
-            if (pp == 7)
+            if (ruleNumber == 7)
                 ArrS[ts1].T = ArrS[ts1].W;
-            if (pp == 11)
+            if (ruleNumber == 11)
                 ArrS[ts1 - 1].T = "! ( " + ArrS[ts1].T + " )";
-            if (pp == 10)
+            if (ruleNumber == 10)
                 ArrS[ts1 - 1].T = "sqrt ( " + ArrS[ts1].T + " )";
-            if (pp == 12)
+            if (ruleNumber == 12)
                 ArrS[ts1 - 1].T = ArrS[ts1 - 1].T + " " + ArrS[ts1].T;
-            if (pp == 9)
+            if (ruleNumber == 9)
                 ArrS[ts1 - 3].T = ArrS[ts1 - 3].W + "[ " + ArrS[ts1 - 1].T + " ] ";
-            if (pp == 15)
+            if (ruleNumber == 15)
                 ArrS[ts1 - 1].T = ArrS[ts1].T + " != ";
-            if (pp == 16)
+            if (ruleNumber == 16)
                 ArrS[ts1 - 1].T = ArrS[ts1].T + " ^ ";
-            if (pp == 13)
+            if (ruleNumber == 13)
                 ArrS[ts1 - 1].T = ArrS[ts1].T + " * ";
-            if (pp == 14)
+            if (ruleNumber == 14)
                 ArrS[ts1 - 1].T = ArrS[ts1].T + " / ";
 
         }
