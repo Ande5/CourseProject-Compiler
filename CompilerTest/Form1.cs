@@ -81,7 +81,7 @@ namespace Compiler
                 {0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}
             };
 
-            Analysis = new UpAnalysis(rules, words, table);
+            Analysis = new UpAnalysis(rules, words, table, 6);
 
             Analysis.PrintCompileInfo += AnalysisOnPrintCompileInfo;
             Analysis.PrintCompileResult += AnalysisOnPrintCompileResult;
