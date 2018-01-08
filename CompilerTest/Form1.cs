@@ -41,6 +41,7 @@ namespace Compiler
         public int IndR;
 
         //public List<MyWord> Arr = new List<MyWord>();
+
         public MyWord[] Arr = new MyWord[1000];
         public MyWord[] ArrS = new MyWord[1000];
         public MyRule[] Rule = new MyRule[16];
