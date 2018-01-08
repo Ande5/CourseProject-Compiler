@@ -196,37 +196,37 @@ namespace Compiler
 
         public void Algorithm()
         {
-            int tm = 0;
-            int ts = 0;
+            int currentSplittedWord = 0;
+            int currentMagazine = 0;
             int go = 0;
             ArrS[0].L = 18;
             ArrS[0].W = "$";
-            Print(tm, ts, Rules.Count);
-            while (tm <= SplittedWords.Count)
+            Print(currentSplittedWord, currentMagazine, Rules.Count);
+            while (currentSplittedWord <= SplittedWords.Count)
             {
-                if (SplittedWords[tm].L == 18)
+                if (SplittedWords[currentSplittedWord].L == 18)
                 {
-                    if (ts == 1)
+                    if (currentMagazine == 1)
                     {
-                        if ((ArrS[ts].L == 0) && (ArrS[ts - 1].L == 18))
+                        if ((ArrS[currentMagazine].L == 0) && (ArrS[currentMagazine - 1].L == 18))
                         {
                             go = 4;
                         }
                     }
                 }
-                if (((ArrZ[ArrS[ts].L, SplittedWords[tm].L] == 1) && go != 4) || ((ArrZ[ArrS[ts].L, SplittedWords[tm].L] == 2) && go != 4))
+                if (((ArrZ[ArrS[currentMagazine].L, SplittedWords[currentSplittedWord].L] == 1) && go != 4) || ((ArrZ[ArrS[currentMagazine].L, SplittedWords[currentSplittedWord].L] == 2) && go != 4))
                 {
-                    ts = ts + 1;
-                    ArrS[ts].L = SplittedWords[tm].L;
-                    ArrS[ts].W = SplittedWords[tm].W;
-                    tm = tm + 1;
-                    Print(tm, ts, Rules.Count);
+                    currentMagazine = currentMagazine + 1;
+                    ArrS[currentMagazine].L = SplittedWords[currentSplittedWord].L;
+                    ArrS[currentMagazine].W = SplittedWords[currentSplittedWord].W;
+                    currentSplittedWord = currentSplittedWord + 1;
+                    Print(currentSplittedWord, currentMagazine, Rules.Count);
                     go = 2;
                 }
-                if ((ArrZ[ArrS[ts].L, SplittedWords[tm].L] == 3) && go != 2 && go != 4)
+                if ((ArrZ[ArrS[currentMagazine].L, SplittedWords[currentSplittedWord].L] == 3) && go != 2 && go != 4)
                 {
                     int koli = 0;
-                    while (ArrZ[ArrS[ts - koli].L, ArrS[ts - koli + 1].L] != 1)
+                    while (ArrZ[ArrS[currentMagazine - koli].L, ArrS[currentMagazine - koli + 1].L] != 1)
                     {
                         koli = koli + 1;
                     }
@@ -237,19 +237,19 @@ namespace Compiler
                             int pr11 = 0;
                             for (var pr12 = 0; pr12 < koli; pr12++)
                             {
-                                if (Rule[p10].M[pr12] == ArrS[ts - koli + 1 + pr12].L)
+                                if (Rule[p10].M[pr12] == ArrS[currentMagazine - koli + 1 + pr12].L)
                                 {
                                     pr11 = pr11 + 1;
                                 }
                             }
                             if (pr11 == koli)
                             {
-                                MyCompil(p10, ts);
-                                ts = ts - koli + 1;
-                                ArrS[ts].L = Rule[p10].P - 1;
-                                ArrS[ts].W = ArrWords[(ArrS[ts].L)].W;
+                                MyCompil(p10, currentMagazine);
+                                currentMagazine = currentMagazine - koli + 1;
+                                ArrS[currentMagazine].L = Rule[p10].P - 1;
+                                ArrS[currentMagazine].W = ArrWords[(ArrS[currentMagazine].L)].W;
                                 Rules.Add(p10);
-                                Print(tm, ts, Rules.Count);
+                                Print(currentSplittedWord, currentMagazine, Rules.Count);
                                 go = 2;
                             }
                         }
@@ -260,7 +260,7 @@ namespace Compiler
                     richTextBox2.Text = @"Ошибка при выполнении восходящего разбора!";
                     textBox2.Text = "";
                     go = 3;
-                    tm = 10000;
+                    currentSplittedWord = 10000;
                     for (int i = 0; i < ArrS.Length; i++)
                     {
                         ArrS[i].L = 0;
@@ -279,7 +279,7 @@ namespace Compiler
                 }
                 if (go == 4)
                 {
-                    tm = 10000;
+                    currentSplittedWord = 10000;
                     for (int i = 0; i < ArrS.Length; i++)
                     {
                         ArrS[i].L = 0;
