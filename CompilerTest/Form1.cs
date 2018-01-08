@@ -36,13 +36,13 @@ namespace Compiler
             public string Name;
         }
 
-        public int Indarr;
+        //public int Indarr;
         public int IndS;
         public int IndR;
 
-        //public List<MyWord> Arr = new List<MyWord>();
+        public List<MyWord> Arr = new List<MyWord>();
 
-        public MyWord[] Arr = new MyWord[1000];
+        //public MyWord[] Arr = new MyWord[1000];
         public MyWord[] ArrS = new MyWord[1000];
         public MyRule[] Rule = new MyRule[16];
         public MyWord[] ArrWords = new MyWord[19];
@@ -125,7 +125,7 @@ namespace Compiler
             string s1, s2, s3;
             s1 = "";
             i2 = yy;
-            while (i2 <= Indarr)
+            while (i2 < Arr.Count)
             {
                 s1 = s1 + ArrWords[Arr[i2].L].W + " ";
                 i2 = i2 + 1;
@@ -196,7 +196,7 @@ namespace Compiler
             ArrS[0].W = "$";
             IndR = 0;
             Print(Tm, Ts, IndR);
-            while (Tm <= Indarr)
+            while (Tm <= Arr.Count)
             {
                 if (Arr[Tm].L == 18)
                 {
@@ -262,12 +262,7 @@ namespace Compiler
                         ArrS[i].T = "";
                         ArrS[i].W = "";
                     }
-                    for (int i = 0; i < Arr.Length; i++)
-                    {
-                        Arr[i].L = 0;
-                        Arr[i].T = "";
-                        Arr[i].W = "";
-                    }
+                    Arr.Clear();
                     for (int i = 0; i < Rules.Length; i++)
                     {
                         Rules[i] = 0;
@@ -287,12 +282,7 @@ namespace Compiler
                         ArrS[i].T = "";
                         ArrS[i].W = "";
                     }
-                    for (int i = 0; i < Arr.Length; i++)
-                    {
-                        Arr[i].L = 0;
-                        Arr[i].T = "";
-                        Arr[i].W = "";
-                    }
+                    Arr.Clear();
                     for (int i = 0; i < Rules.Length; i++)
                     {
                         Rules[i] = 0;
@@ -319,8 +309,7 @@ namespace Compiler
             int jjj, pr3;
             if (str1.Substring(nach1, kon1 + 1 - nach1) == " true" || str1.Substring(nach1, kon1 + 1 - nach1) == " false")
             {
-                Arr[Indarr] = new MyWord(17, str1.Substring(nach1, kon1 + 1 - nach1));
-                Indarr = Indarr + 1;
+                Arr.Add(new MyWord(17, str1.Substring(nach1, kon1 + 1 - nach1)));
                 return 1;
             }
             else
@@ -333,8 +322,8 @@ namespace Compiler
                 }
                 if (pr3 == kon1 - nach1)
                 {
-                    Arr[Indarr] = Arr[Indarr] = new MyWord(17, str1.Substring(nach1, kon1 + 1 - nach1));
-                    Indarr = Indarr + 1;
+                    Arr.Add(new MyWord(17, str1.Substring(nach1, kon1 + 1 - nach1)));
+
                     return 1;
                 }
                 else
@@ -364,8 +353,7 @@ namespace Compiler
                     }
                     if (kon1 - nach1 + 1 == kol)
                     {
-                        Arr[Indarr] = new MyWord(ii, ArrWords[ii].W);
-                        Indarr = Indarr + 1;
+                        Arr.Add(new MyWord(ii, ArrWords[ii].W));
                         return ii;
                     }
                 }
@@ -381,7 +369,6 @@ namespace Compiler
             textBox2.Clear();
             Str += textBox1.Text;
             Str += " ";
-            Indarr = 0;
             IndR = 0;
             nach = 0;
             probel = 1;
@@ -398,8 +385,7 @@ namespace Compiler
                             {
                                 if ((Str.Substring(nach + 1, i - nach - 1)).Length <= 8 && (Str.Substring(nach + 1, i - nach - 1)).Length > 0)
                                 {
-                                    Arr[Indarr] = new MyWord(16, Str.Substring(nach, i + 1 - nach));
-                                    Indarr = Indarr + 1;
+                                    Arr.Add(new MyWord(16, Str.Substring(nach, i + 1 - nach)));
                                 }
                                 else
                                 {
@@ -429,7 +415,7 @@ namespace Compiler
             }
             if (k != 1)
             {
-                Arr[Indarr] = new MyWord(18, "$");
+                Arr.Add(new MyWord(18, "$"));
                 Algorithm();
             }
         }
@@ -454,12 +440,7 @@ namespace Compiler
                 ArrS[i].T = "";
                 ArrS[i].W = "";
             }
-            for (int i = 0; i < Arr.Length; i++)
-            {
-                Arr[i].L = 0;
-                Arr[i].T = "";
-                Arr[i].W = "";
-            }
+            Arr.Clear();
             for (int i = 0; i < Rules.Length; i++)
             {
                 Rules[i] = 0;
