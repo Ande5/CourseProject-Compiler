@@ -37,7 +37,6 @@ namespace Compiler
         }
 
         public int IndS;
-        public int IndR;
 
         public List<MyWord> SplittedWords = new List<MyWord>();
 
@@ -86,7 +85,7 @@ namespace Compiler
             new MyWord(1, "$")
         };
 
-        public int[] Rules = new int[1000];
+        public List<int> Rules = new List<int>();
 
         public int[,] ArrZ = {
             {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3},
@@ -136,7 +135,7 @@ namespace Compiler
             richTextBox2.Text += @"Магазин:" + s2 + '\n';
             string s3 = "";
             i2 = 1;
-            while (i2 <= xx)
+            while (i2 < xx)
             {
                 s3 = s3 + (Rules[i2] + 1).ToString() + " ";
                 i2 = i2 + 1;
@@ -188,8 +187,7 @@ namespace Compiler
             int go = 0;
             ArrS[0].L = 18;
             ArrS[0].W = "$";
-            IndR = 0;
-            Print(tm, ts, IndR);
+            Print(tm, ts, Rules.Count);
             while (tm <= SplittedWords.Count)
             {
                 if (SplittedWords[tm].L == 18)
@@ -208,7 +206,7 @@ namespace Compiler
                     ArrS[ts].L = SplittedWords[tm].L;
                     ArrS[ts].W = SplittedWords[tm].W;
                     tm = tm + 1;
-                    Print(tm, ts, IndR);
+                    Print(tm, ts, Rules.Count);
                     go = 2;
                 }
                 if ((ArrZ[ArrS[ts].L, SplittedWords[tm].L] == 3) && go != 2 && go != 4)
@@ -236,9 +234,8 @@ namespace Compiler
                                 ts = ts - koli + 1;
                                 ArrS[ts].L = Rule[p10].P - 1;
                                 ArrS[ts].W = ArrWords[(ArrS[ts].L)].W;
-                                IndR = IndR + 1;
-                                Rules[IndR] = p10;
-                                Print(tm, ts, IndR);
+                                Rules.Add(p10);
+                                Print(tm, ts, Rules.Count);
                                 go = 2;
                             }
                         }
@@ -257,7 +254,7 @@ namespace Compiler
                         ArrS[i].W = "";
                     }
                     SplittedWords.Clear();
-                    for (int i = 0; i < Rules.Length; i++)
+                    for (int i = 0; i < Rules.Count; i++)
                     {
                         Rules[i] = 0;
                     }
@@ -277,7 +274,7 @@ namespace Compiler
                         ArrS[i].W = "";
                     }
                     SplittedWords.Clear();
-                    for (int i = 0; i < Rules.Length; i++)
+                    for (int i = 0; i < Rules.Count; i++)
                     {
                         Rules[i] = 0;
                     }
@@ -360,7 +357,6 @@ namespace Compiler
             textBox2.Clear();
             Str += textBox1.Text;
             Str += " ";
-            IndR = 0;
             int nach = 0;
             int probel = 1;
             for (var i = 0; i < Str.Length; i++)
@@ -422,10 +418,7 @@ namespace Compiler
                 ArrS[i].W = "";
             }
             SplittedWords.Clear();
-            for (int i = 0; i < Rules.Length; i++)
-            {
-                Rules[i] = 0;
-            }
+            Rules.Clear();
             Str = "";
             Up();
         }
