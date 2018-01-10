@@ -40,6 +40,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Data\UpTableLoader.cs" />
     <Compile Include="MyRule.cs" />
     <Compile Include="MyWord.cs" />
     <Compile Include="UpAnalysis.cs" />

@@ -124,12 +124,12 @@ namespace LR
         {
             int currentSplittedWord = 0;
             int currentMagazine = 0;
-            int go = 0;
             ArrS[0].L = 18;
             ArrS[0].W = "$";
             PrintInfo(currentSplittedWord, currentMagazine, RulesFounded.Count, splittedWords);
             while (currentSplittedWord <= splittedWords.Length)
             {
+                int go = 0;
                 if (splittedWords[currentSplittedWord].L == 18)
                 {
                     if (currentMagazine == 1)
@@ -141,7 +141,11 @@ namespace LR
                         }
                     }
                 }
-                if (((ArrZ[ArrS[currentMagazine].L, splittedWords[currentSplittedWord].L] == 1) && go != 4) || ((ArrZ[ArrS[currentMagazine].L, splittedWords[currentSplittedWord].L] == 2) && go != 4))
+
+                int row = ArrS[currentMagazine].L;
+                int col = splittedWords[currentSplittedWord].L;
+
+                if (((ArrZ[row, col] == 1) && go != 4) || ((ArrZ[row, col] == 2) && go != 4))
                 {
                     currentMagazine = currentMagazine + 1;
                     ArrS[currentMagazine].L = splittedWords[currentSplittedWord].L;
@@ -150,13 +154,14 @@ namespace LR
                     PrintInfo(currentSplittedWord, currentMagazine, RulesFounded.Count, splittedWords);
                     go = 2;
                 }
-                if ((ArrZ[ArrS[currentMagazine].L, splittedWords[currentSplittedWord].L] == 3) && go != 2 && go != 4)
+                if ((ArrZ[row, col] == 3) && go != 2 && go != 4)
                 {
                     int koli = 0;
                     while (ArrZ[ArrS[currentMagazine - koli].L, ArrS[currentMagazine - koli + 1].L] != 1)
                     {
                         koli = koli + 1;
                     }
+                    //TODO: Количество правил
                     for (var p10 = 0; p10 < 16; p10++)
                     {
                         if (Rules[p10].L == koli && go != 2)
@@ -178,6 +183,7 @@ namespace LR
                                 RulesFounded.Add(p10);
                                 PrintInfo(currentSplittedWord, currentMagazine, RulesFounded.Count, splittedWords);
                                 go = 2;
+                                //TODO: Сделать выход из цикла. Зря тратися время
                             }
                         }
                     }
@@ -202,15 +208,15 @@ namespace LR
                 }
                 if (go != 3)
                 {
-                    PrintCompileResult.Invoke(ArrS[1].T);
+                    PrintCompileResult.Invoke(ArrS[currentMagazine].T);
                 }
                 if (go == 4)
                 {
                     // финальная точка
                     // очистка нафиг не нужна
                     currentSplittedWord = 10000;
+                    PrintInfo(currentSplittedWord, currentMagazine, RulesFounded.Count, splittedWords);
                 }
-                go = 0;
             }
         }
         public bool IsNumber(string str2, string dopstr, int k)
