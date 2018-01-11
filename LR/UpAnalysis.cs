@@ -50,18 +50,16 @@ namespace LR
 
         public MyWord[] ArrS = new MyWord[1000];
 
-        public void PrintInfo(int yy, int zz, int xx, MyWord[] splittedWords)
+        public void PrintInfo(int zz, int xx, Queue<MyWord> splittedWords)
         {
             string s1 = "";
-            int i2 = yy;
-            while (i2 < splittedWords.Length)
+            foreach (var word in splittedWords)
             {
-                s1 = s1 + ArrWords[splittedWords[i2].L].W + " ";
-                i2 = i2 + 1;
+                s1 += ArrWords[word.L].W + " ";
             }
             PrintCompileInfo.Invoke(@"Строка:" + s1 + '\n');
             string s2 = "";
-            i2 = 0;
+            int i2 = 0;
             while (i2 <= zz)
             {
                 s2 = s2 + ArrWords[ArrS[i2].L].W + " ";
@@ -120,17 +118,17 @@ namespace LR
 
         }
 
-        public void Algorithm(MyWord[] splittedWords)
+        public void Algorithm(Queue<MyWord> splittedWords)
         {
-            int currentWord = 0;
             int currentOut = 0;
             ArrS[currentOut].L = 18;
             ArrS[currentOut].W = "$";
-            PrintInfo(currentWord, currentOut, RulesFounded.Count, splittedWords);
-            while (currentWord <= splittedWords.Length)
+            PrintInfo(currentOut, RulesFounded.Count, splittedWords);
+            while (splittedWords.Count > 0)
             {
                 int go = 0;
-                if (splittedWords[currentWord].L == 18)
+                MyWord word = splittedWords.Peek();
+                if (word.L == 18)
                 {
                     if (currentOut == 1)
                     {
@@ -143,15 +141,14 @@ namespace LR
                 }
 
                 int row = ArrS[currentOut].L;
-                int col = splittedWords[currentWord].L;
+                int col = word.L;
 
                 if (((ArrZ[row, col] == 1) && go != 4) || ((ArrZ[row, col] == 2) && go != 4))
                 {
                     currentOut++;
-                    ArrS[currentOut].L = splittedWords[currentWord].L;
-                    ArrS[currentOut].W = splittedWords[currentWord].W;
-                    currentWord++;
-                    PrintInfo(currentWord, currentOut, RulesFounded.Count, splittedWords);
+                    MyWord tmpWord = splittedWords.Dequeue();
+                    ArrS[currentOut] = tmpWord;
+                    PrintInfo(currentOut, RulesFounded.Count, splittedWords);
                     go = 2;
                 }
                 if ((ArrZ[row, col] == 3) && go != 2 && go != 4)
@@ -182,7 +179,7 @@ namespace LR
                                 ArrS[currentOut].L = Rules[ruleNumber].P - 1;
                                 ArrS[currentOut].W = ArrWords[(ArrS[currentOut].L)].W;
                                 RulesFounded.Add(ruleNumber);
-                                PrintInfo(currentWord, currentOut, RulesFounded.Count, splittedWords);
+                                PrintInfo(currentOut, RulesFounded.Count, splittedWords);
                                 go = 2;
                                 //TODO: Сделать выход из цикла. Зря тратися время
                             }
@@ -193,19 +190,8 @@ namespace LR
                 {
                     PrintCompileInfo.Invoke(@"Ошибка при выполнении восходящего разбора!");
                     PrintCompileResult.Invoke("");
-                    go = 3;
-                    currentWord = 10000;
-                    for (int i = 0; i < ArrS.Length; i++)
-                    {
-                        ArrS[i].L = 0;
-                        ArrS[i].T = "";
-                        ArrS[i].W = "";
-                    }
-                    //splittedWords = null;
-                    for (int i = 0; i < RulesFounded.Count; i++)
-                    {
-                        RulesFounded[i] = 0;
-                    }
+                    //TODO: return
+                    return;
                 }
                 if (go != 3)
                 {
@@ -215,8 +201,9 @@ namespace LR
                 {
                     // финальная точка
                     // очистка нафиг не нужна
-                    currentWord = 10000;
-                    PrintInfo(currentWord, currentOut, RulesFounded.Count, splittedWords);
+                    //TODO: return
+                    PrintInfo(currentOut, RulesFounded.Count, splittedWords);
+                    return;
                 }
             }
         }
@@ -238,12 +225,12 @@ namespace LR
         /// <param name="endPos">Конечная позиция, для поиска</param>
         /// <param name="splittedWords"></param>
         /// <returns></returns>
-        public int IsThisNumber(string str, int startPos, int endPos, List<MyWord> splittedWords)
+        public int IsThisNumber(string str, int startPos, int endPos, Queue<MyWord> splittedWords)
         {
             //Проверка булевых переменных
             if (str.Substring(startPos, endPos + 1 - startPos) == " true" || str.Substring(startPos, endPos + 1 - startPos) == " false")
             {
-                splittedWords.Add(new MyWord(17, str.Substring(startPos, endPos + 1 - startPos)));
+                splittedWords.Enqueue(new MyWord(17, str.Substring(startPos, endPos + 1 - startPos)));
                 return 1;
             }
             //Проверка на число
@@ -257,7 +244,7 @@ namespace LR
                 }
                 if (srchLength == endPos - startPos)
                 {
-                    splittedWords.Add(new MyWord(17, str.Substring(startPos, endPos + 1 - startPos)));
+                    splittedWords.Enqueue(new MyWord(17, str.Substring(startPos, endPos + 1 - startPos)));
 
                     return 1;
                 }
@@ -276,7 +263,7 @@ namespace LR
         /// <param name="endPos">Конечная позиция, для поиска</param>
         /// <param name="splittedWords"></param>
         /// <returns> Возвращяется номер символа в грамматике </returns>
-        public int IsThisOperator(string str, int startPos, int endPos, List<MyWord> splittedWords)
+        public int IsThisOperator(string str, int startPos, int endPos, Queue<MyWord> splittedWords)
         {
             if (str[startPos] == ' ') startPos += 1;
             for (var i = 6; i < 16; i++)
@@ -290,7 +277,7 @@ namespace LR
                     }
                     if (endPos - startPos + 1 == srchLength)
                     {
-                        splittedWords.Add(new MyWord(i, ArrWords[i].W));
+                        splittedWords.Enqueue(new MyWord(i, ArrWords[i].W));
                         return i;
                     }
                 }
@@ -302,10 +289,10 @@ namespace LR
         /// Парсит входную строку и вызывает алгоритм
         /// </summary>
         /// <param name="str">Строка, для компиляции</param>
-        public MyWord[] Up(string str)
+        public Queue<MyWord> Up(string str)
         {
             // Коллекция строк, которые были получены в результате парсинга строки
-            List<MyWord> splittedWords = new List<MyWord>();
+            Queue<MyWord> splittedWords = new Queue<MyWord>();
         ArrS[1].T = "";
 
             str += " ";
@@ -329,7 +316,7 @@ namespace LR
                             {
                                 if ((str.Substring(nach + 1, i - nach - 1)).Length <= 8 && (str.Substring(nach + 1, i - nach - 1)).Length > 0)
                                 {
-                                    splittedWords.Add(new MyWord(16, str.Substring(nach, i + 1 - nach)));
+                                    splittedWords.Enqueue(new MyWord(16, str.Substring(nach, i + 1 - nach)));
                                 }
                                 else
                                 {
@@ -359,23 +346,22 @@ namespace LR
             }
             if (!fail)
             {
-                splittedWords.Add(new MyWord(18, "$"));
-                return splittedWords.ToArray();
+                splittedWords.Enqueue(new MyWord(18, "$"));
+                return splittedWords;
             }
             return null;
         }
 
         public void Run(string str)
         {
+            //TODO: Убрать очистку
             for (var i = 0; i < ArrS.Length; i++)
             {
-                ArrS[i].L = 0;
-                ArrS[i].T = "";
-                ArrS[i].W = "";
+                ArrS[i]= new MyWord(0, "");
             }
             RulesFounded.Clear();
 
-            MyWord[] words = Up(str);
+            Queue<MyWord> words = Up(str);
             if (words != null)
             {
                 Algorithm(words);

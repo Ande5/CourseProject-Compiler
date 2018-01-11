@@ -3,7 +3,7 @@
     /// <summary>
     /// Структура символов грамматики
     /// </summary>
-    public struct MyWord
+    public class MyWord
     {
         public MyWord(int l, string w)
         {
