@@ -122,19 +122,19 @@ namespace LR
 
         public void Algorithm(MyWord[] splittedWords)
         {
-            int currentSplittedWord = 0;
-            int currentMagazine = 0;
-            ArrS[0].L = 18;
-            ArrS[0].W = "$";
-            PrintInfo(currentSplittedWord, currentMagazine, RulesFounded.Count, splittedWords);
-            while (currentSplittedWord <= splittedWords.Length)
+            int currentWord = 0;
+            int currentOut = 0;
+            ArrS[currentOut].L = 18;
+            ArrS[currentOut].W = "$";
+            PrintInfo(currentWord, currentOut, RulesFounded.Count, splittedWords);
+            while (currentWord <= splittedWords.Length)
             {
                 int go = 0;
-                if (splittedWords[currentSplittedWord].L == 18)
+                if (splittedWords[currentWord].L == 18)
                 {
-                    if (currentMagazine == 1)
+                    if (currentOut == 1)
                     {
-                        if ((ArrS[currentMagazine].L == 0) && (ArrS[currentMagazine - 1].L == 18))
+                        if ((ArrS[currentOut].L == 0) && (ArrS[currentOut - 1].L == 18))
                         {
                             // Тут можно делать выход из алгоритма
                             go = 4;
@@ -142,46 +142,47 @@ namespace LR
                     }
                 }
 
-                int row = ArrS[currentMagazine].L;
-                int col = splittedWords[currentSplittedWord].L;
+                int row = ArrS[currentOut].L;
+                int col = splittedWords[currentWord].L;
 
                 if (((ArrZ[row, col] == 1) && go != 4) || ((ArrZ[row, col] == 2) && go != 4))
                 {
-                    currentMagazine = currentMagazine + 1;
-                    ArrS[currentMagazine].L = splittedWords[currentSplittedWord].L;
-                    ArrS[currentMagazine].W = splittedWords[currentSplittedWord].W;
-                    currentSplittedWord = currentSplittedWord + 1;
-                    PrintInfo(currentSplittedWord, currentMagazine, RulesFounded.Count, splittedWords);
+                    currentOut++;
+                    ArrS[currentOut].L = splittedWords[currentWord].L;
+                    ArrS[currentOut].W = splittedWords[currentWord].W;
+                    currentWord++;
+                    PrintInfo(currentWord, currentOut, RulesFounded.Count, splittedWords);
                     go = 2;
                 }
                 if ((ArrZ[row, col] == 3) && go != 2 && go != 4)
                 {
                     int koli = 0;
-                    while (ArrZ[ArrS[currentMagazine - koli].L, ArrS[currentMagazine - koli + 1].L] != 1)
+                    while (ArrZ[ArrS[currentOut - koli].L, ArrS[currentOut - koli + 1].L] != 1)
                     {
-                        koli = koli + 1;
+                        koli++;
                     }
                     //TODO: Количество правил
-                    for (var p10 = 0; p10 < 16; p10++)
+                    for (var ruleNumber = 0; ruleNumber < Rules.Length; ruleNumber++)
                     {
-                        if (Rules[p10].L == koli && go != 2)
+                        if (Rules[ruleNumber].L == koli && go != 2)
                         {
                             int pr11 = 0;
                             for (var pr12 = 0; pr12 < koli; pr12++)
                             {
-                                if (Rules[p10].M[pr12] == ArrS[currentMagazine - koli + 1 + pr12].L)
+                                if (Rules[ruleNumber].M[pr12] == ArrS[currentOut - koli + 1 + pr12].L)
                                 {
-                                    pr11 = pr11 + 1;
+                                    pr11++;
                                 }
                             }
                             if (pr11 == koli)
                             {
-                                MyCompil(p10, currentMagazine);
-                                currentMagazine = currentMagazine - koli + 1;
-                                ArrS[currentMagazine].L = Rules[p10].P - 1;
-                                ArrS[currentMagazine].W = ArrWords[(ArrS[currentMagazine].L)].W;
-                                RulesFounded.Add(p10);
-                                PrintInfo(currentSplittedWord, currentMagazine, RulesFounded.Count, splittedWords);
+                                MyCompil(ruleNumber, currentOut);
+                                currentOut = currentOut - koli + 1;
+                                // Присваиваем правило
+                                ArrS[currentOut].L = Rules[ruleNumber].P - 1;
+                                ArrS[currentOut].W = ArrWords[(ArrS[currentOut].L)].W;
+                                RulesFounded.Add(ruleNumber);
+                                PrintInfo(currentWord, currentOut, RulesFounded.Count, splittedWords);
                                 go = 2;
                                 //TODO: Сделать выход из цикла. Зря тратися время
                             }
@@ -193,7 +194,7 @@ namespace LR
                     PrintCompileInfo.Invoke(@"Ошибка при выполнении восходящего разбора!");
                     PrintCompileResult.Invoke("");
                     go = 3;
-                    currentSplittedWord = 10000;
+                    currentWord = 10000;
                     for (int i = 0; i < ArrS.Length; i++)
                     {
                         ArrS[i].L = 0;
@@ -208,14 +209,14 @@ namespace LR
                 }
                 if (go != 3)
                 {
-                    PrintCompileResult.Invoke(ArrS[currentMagazine].T);
+                    PrintCompileResult.Invoke(ArrS[currentOut].T);
                 }
                 if (go == 4)
                 {
                     // финальная точка
                     // очистка нафиг не нужна
-                    currentSplittedWord = 10000;
-                    PrintInfo(currentSplittedWord, currentMagazine, RulesFounded.Count, splittedWords);
+                    currentWord = 10000;
+                    PrintInfo(currentWord, currentOut, RulesFounded.Count, splittedWords);
                 }
             }
         }
