@@ -5,15 +5,15 @@
     /// </summary>
     public struct MyRule
     {
-        public MyRule(int p, int[] m)
+        public MyRule(int ruleNumber, int[] ruleList)
         {
-            P = p;
-            M = m;
+            RuleNumber = ruleNumber;
+            RuleList = ruleList;
         }
 
-        public int P;
-        public int L => M.Length;
-        public int[] M;
+        public int RuleNumber;
+        public int CountOfWords => RuleList.Length;
+        public int[] RuleList;
     }
 }
 

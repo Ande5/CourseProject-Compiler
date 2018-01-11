@@ -5,14 +5,14 @@
     /// </summary>
     public class MyWord
     {
-        public MyWord(int l, string w)
+        public MyWord(int number, string value)
         {
-            L = l;
-            W = w;
+            Number = number;
+            Value = value;
             T = "";
         }
 
-        public int L;
-        public string W, T;
+        public int Number;
+        public string Value, T;
     }
 }

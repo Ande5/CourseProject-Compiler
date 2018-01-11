@@ -5,11 +5,11 @@ namespace LR
 {
     public class UpAnalysis
     {
-        public UpAnalysis(MyRule[] ruleses, MyWord[] words, int[,] table, int countOfRules)
+        public UpAnalysis(MyRule[] ruleses, MyWord[] words, int[,] ruleTable, int countOfRules)
         {
             Rules = ruleses;
-            ArrWords = words;
-            ArrZ = table;
+            Words = words;
+            RuleRuleTable = ruleTable;
             CountOfRules = countOfRules;
         }
 
@@ -31,47 +31,41 @@ namespace LR
         /// <summary>
         /// Коллекция символов грамматики, для компиляции
         /// </summary>
-        public MyWord[] ArrWords;
+        public MyWord[] Words;
 
         /// <summary>
         /// Управляющая таблица восходящего разбора
         /// </summary>
-        public int[,] ArrZ;
+        public int[,] RuleRuleTable;
 
         /// <summary>
         /// Количество правил
         /// </summary>
         public int CountOfRules;
 
-        /// <summary>
-        /// Коллекций номеров правил
-        /// </summary>
-        public List<int> RulesFounded = new List<int>();
-
         public MyWord[] ArrS = new MyWord[1000];
 
-        public void PrintInfo(int zz, int xx, Queue<MyWord> splittedWords)
+        public void PrintInfo(int zz, List<int> rulesFounded, Queue<MyWord> splittedWords)
         {
             string s1 = "";
             foreach (var word in splittedWords)
             {
-                s1 += ArrWords[word.L].W + " ";
+                s1 += Words[word.Number].Value + " ";
             }
             PrintCompileInfo.Invoke(@"Строка:" + s1 + '\n');
             string s2 = "";
             int i2 = 0;
             while (i2 <= zz)
             {
-                s2 = s2 + ArrWords[ArrS[i2].L].W + " ";
+                s2 = s2 + Words[ArrS[i2].Number].Value + " ";
                 i2 = i2 + 1;
             }
             PrintCompileInfo.Invoke(@"Магазин:" + s2 + '\n');
             string s3 = "";
-            i2 = 1;
-            while (i2 < xx)
+
+            foreach(var rule in rulesFounded)
             {
-                s3 = s3 + (RulesFounded[i2] + 1) + " ";
-                i2 = i2 + 1;
+                s3 = s3 + (rule + 1) + " ";
             }
             PrintCompileInfo.Invoke(@"Правила:" + s3 + '\n');
             PrintCompileInfo.Invoke(@"      " + '\n');
@@ -90,15 +84,15 @@ namespace LR
             if (ruleNumber == 2)
                 ArrS[ts1 - 6].T = "for ( " + ArrS[ts1 - 6].T + ArrS[ts1 - 5].T + "; " + ArrS[ts1 - 3].T + "; " + ArrS[ts1 - 2].T + " ) {" + ArrS[ts1 - 1].T + "} ;" + Environment.NewLine + ArrS[ts1].T;
             if (ruleNumber == 4)
-                ArrS[ts1 - 4].T = ArrS[ts1 - 3].W + "[ " + ArrS[ts1 - 1].T + " ] = ";
+                ArrS[ts1 - 4].T = ArrS[ts1 - 3].Value + "[ " + ArrS[ts1 - 1].T + " ] = ";
             if (ruleNumber == 3)
-                ArrS[ts1 - 1].T = ArrS[ts1].W + " = ";
+                ArrS[ts1 - 1].T = ArrS[ts1].Value + " = ";
             if (ruleNumber == 6)
                 ArrS[ts1 - 1].T = ArrS[ts1 - 1].T + " " + ArrS[ts1].T;
             if (ruleNumber == 8)
-                ArrS[ts1].T = ArrS[ts1].W;
+                ArrS[ts1].T = ArrS[ts1].Value;
             if (ruleNumber == 7)
-                ArrS[ts1].T = ArrS[ts1].W;
+                ArrS[ts1].T = ArrS[ts1].Value;
             if (ruleNumber == 11)
                 ArrS[ts1 - 1].T = "! ( " + ArrS[ts1].T + " )";
             if (ruleNumber == 10)
@@ -106,7 +100,7 @@ namespace LR
             if (ruleNumber == 12)
                 ArrS[ts1 - 1].T = ArrS[ts1 - 1].T + " " + ArrS[ts1].T;
             if (ruleNumber == 9)
-                ArrS[ts1 - 3].T = ArrS[ts1 - 3].W + "[ " + ArrS[ts1 - 1].T + " ] ";
+                ArrS[ts1 - 3].T = ArrS[ts1 - 3].Value + "[ " + ArrS[ts1 - 1].T + " ] ";
             if (ruleNumber == 15)
                 ArrS[ts1 - 1].T = ArrS[ts1].T + " != ";
             if (ruleNumber == 16)
@@ -120,93 +114,93 @@ namespace LR
 
         public void Algorithm(Queue<MyWord> splittedWords)
         {
+            // Коллекций номеров правил
+            List<int> rulesFounded = new List<int>();
             int currentOut = 0;
-            ArrS[currentOut].L = 18;
-            ArrS[currentOut].W = "$";
-            PrintInfo(currentOut, RulesFounded.Count, splittedWords);
+            ArrS[currentOut].Number = 18;
+            ArrS[currentOut].Value = "$";
+            PrintInfo(currentOut, rulesFounded, splittedWords);
             while (splittedWords.Count > 0)
             {
-                int go = 0;
+                CompileActions action = CompileActions.Start;
                 MyWord word = splittedWords.Peek();
-                if (word.L == 18)
+                if (word.Number == 18)
                 {
                     if (currentOut == 1)
                     {
-                        if ((ArrS[currentOut].L == 0) && (ArrS[currentOut - 1].L == 18))
+                        // Сначала символ в конце, потом в начале
+                        // Смотрится, что бы первым был символ $ а потом цепочка S
+                        // Если условие выполнено, то это конец разбора
+                        if ((ArrS[currentOut].Number == 0) && (ArrS[currentOut - 1].Number == 18))
                         {
-                            // Тут можно делать выход из алгоритма
-                            go = 4;
+                            PrintInfo(currentOut, rulesFounded, splittedWords);
+                            return;
                         }
                     }
                 }
 
-                int row = ArrS[currentOut].L;
-                int col = word.L;
+                int row = ArrS[currentOut].Number;
+                int col = word.Number;
 
-                if (((ArrZ[row, col] == 1) && go != 4) || ((ArrZ[row, col] == 2) && go != 4))
+                if ((RuleRuleTable[row, col] == 1 && action != CompileActions.Error) || (RuleRuleTable[row, col] == 2 && action != CompileActions.Error))
                 {
                     currentOut++;
                     MyWord tmpWord = splittedWords.Dequeue();
                     ArrS[currentOut] = tmpWord;
-                    PrintInfo(currentOut, RulesFounded.Count, splittedWords);
-                    go = 2;
+                    PrintInfo(currentOut, rulesFounded, splittedWords);
+                    action = CompileActions.Next;
                 }
-                if ((ArrZ[row, col] == 3) && go != 2 && go != 4)
+                if ((RuleRuleTable[row, col] == 3) && action != CompileActions.Next && action != CompileActions.Error)
                 {
-                    int koli = 0;
-                    while (ArrZ[ArrS[currentOut - koli].L, ArrS[currentOut - koli + 1].L] != 1)
+                    // Количество символов, для свертки, ищем правило, где 2 символа грамматики в нем
+                    int countOfWords = 0;
+                    // Ищется правило для 2 последних символов в выходной цепочке
+                    while (RuleRuleTable[ArrS[currentOut - countOfWords].Number, ArrS[currentOut - countOfWords + 1].Number] != 1)
                     {
-                        koli++;
+                        countOfWords++;
                     }
                     //TODO: Количество правил
                     for (var ruleNumber = 0; ruleNumber < Rules.Length; ruleNumber++)
                     {
-                        if (Rules[ruleNumber].L == koli && go != 2)
+                        if (Rules[ruleNumber].CountOfWords == countOfWords)
                         {
-                            int pr11 = 0;
-                            for (var pr12 = 0; pr12 < koli; pr12++)
+                            int countOfRules = 0;
+                            for (var i = 0; i < countOfWords; i++)
                             {
-                                if (Rules[ruleNumber].M[pr12] == ArrS[currentOut - koli + 1 + pr12].L)
+                                // Сверяет последовательность в цепочке с прпвилами из списка правил
+                                if (Rules[ruleNumber].RuleList[i] == ArrS[currentOut - countOfWords + 1 + i].Number)
                                 {
-                                    pr11++;
+                                    countOfRules++;
                                 }
                             }
-                            if (pr11 == koli)
+                            // Если количество сошлось, то это то правило
+                            if (countOfRules == countOfWords)
                             {
                                 MyCompil(ruleNumber, currentOut);
-                                currentOut = currentOut - koli + 1;
-                                // Присваиваем правило
-                                ArrS[currentOut].L = Rules[ruleNumber].P - 1;
-                                ArrS[currentOut].W = ArrWords[(ArrS[currentOut].L)].W;
-                                RulesFounded.Add(ruleNumber);
-                                PrintInfo(currentOut, RulesFounded.Count, splittedWords);
-                                go = 2;
-                                //TODO: Сделать выход из цикла. Зря тратися время
+                                // Сдвигаем правило на следующее, исключая символы, которые были свернуты
+                                currentOut = currentOut - countOfWords + 1;
+                                // Присваиваем правило на текущее место
+                                ArrS[currentOut].Number = Rules[ruleNumber].RuleNumber - 1;
+                                ArrS[currentOut].Value = Words[ArrS[currentOut].Number].Value;
+                                rulesFounded.Add(ruleNumber);
+                                PrintInfo(currentOut, rulesFounded, splittedWords);
+                                action = CompileActions.Next;
+                                break;
                             }
                         }
                     }
                 }
-                if (go != 2 && go != 4)
+                if (action != CompileActions.Next)
                 {
                     PrintCompileInfo.Invoke(@"Ошибка при выполнении восходящего разбора!");
                     PrintCompileResult.Invoke("");
                     //TODO: return
                     return;
                 }
-                if (go != 3)
-                {
-                    PrintCompileResult.Invoke(ArrS[currentOut].T);
-                }
-                if (go == 4)
-                {
-                    // финальная точка
-                    // очистка нафиг не нужна
-                    //TODO: return
-                    PrintInfo(currentOut, RulesFounded.Count, splittedWords);
-                    return;
-                }
+                PrintCompileResult.Invoke(ArrS[currentOut].T);
             }
         }
+
         public bool IsNumber(string str2, string dopstr, int k)
         {
             int pr2 = 0;
@@ -256,7 +250,7 @@ namespace LR
 
         /// <summary>
         /// Метод поиска (парсинга) входной строки
-        /// Заполняется массив <see cref="ArrWords"/> нашими символами грамматики (:=, if, и т.д.)
+        /// Заполняется массив <see cref="Words"/> нашими символами грамматики (:=, if, и т.д.)
         /// </summary>
         /// <param name="str">Строка, в которой осуществляется поиск</param>
         /// <param name="startPos">Начальная позиция, для поиска</param>
@@ -266,18 +260,18 @@ namespace LR
         public int IsThisOperator(string str, int startPos, int endPos, Queue<MyWord> splittedWords)
         {
             if (str[startPos] == ' ') startPos += 1;
-            for (var i = 6; i < 16; i++)
+            for (var i = CountOfRules; i < Rules.Length; i++)
             {
-                if (endPos - startPos + 1 == (ArrWords[i].W).Length)
+                if (endPos - startPos + 1 == (Words[i].Value).Length)
                 {
                     int srchLength = 0;
-                    for (var j = 1; j <= (ArrWords[i].W).Length; j++)
+                    for (var j = 1; j <= (Words[i].Value).Length; j++)
                     {
-                        if (str[startPos + j - 1] == ArrWords[i].W[j - 1]) srchLength = srchLength + 1;
+                        if (str[startPos + j - 1] == Words[i].Value[j - 1]) srchLength = srchLength + 1;
                     }
                     if (endPos - startPos + 1 == srchLength)
                     {
-                        splittedWords.Enqueue(new MyWord(i, ArrWords[i].W));
+                        splittedWords.Enqueue(new MyWord(i, Words[i].Value));
                         return i;
                     }
                 }
@@ -293,7 +287,6 @@ namespace LR
         {
             // Коллекция строк, которые были получены в результате парсинга строки
             Queue<MyWord> splittedWords = new Queue<MyWord>();
-        ArrS[1].T = "";
 
             str += " ";
             int nach = 0;
@@ -359,7 +352,6 @@ namespace LR
             {
                 ArrS[i]= new MyWord(0, "");
             }
-            RulesFounded.Clear();
 
             Queue<MyWord> words = Up(str);
             if (words != null)
