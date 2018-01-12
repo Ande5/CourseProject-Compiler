@@ -3,16 +3,16 @@
     /// <summary>
     /// Структура символов грамматики
     /// </summary>
-    public class MyWord
+    public class Word
     {
-        public MyWord(int number, string value)
+        public Word(int number, string value)
         {
             Number = number;
             Value = value;
-            T = "";
+            Temp = "";
         }
 
         public int Number;
-        public string Value, T;
+        public string Value, Temp;
     }
 }
