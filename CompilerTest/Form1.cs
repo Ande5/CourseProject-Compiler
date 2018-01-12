@@ -55,11 +55,11 @@ namespace Compiler
                 new MyRule(5, new[] {9, 10, 4, 11}),    // A -> id [ A ]
                 new MyRule(5, new[] {13, 4}),           // A -> sqr A
                 new MyRule(5, new[] {6, 4}),            // A -> R A
-                new MyRule(6, new[] {5, 4}),            // L -> = A
-                new MyRule(6, new[] {13, 4}),           // L -> ! A
-                new MyRule(6, new[] {14, 4}),           // L -> > A
-                new MyRule(6, new[] {15, 5}),           // L -> < A
-                new MyRule(7, new[] {16, 5}),           // R -> - A
+                new MyRule(6, new[] {14, 4}),           // L -> = A
+                new MyRule(6, new[] {15, 4}),           // L -> ! A
+                new MyRule(6, new[] {16, 4}),           // L -> > A
+                new MyRule(6, new[] {17, 4}),           // L -> < A
+                new MyRule(7, new[] {18, 4}),           // R -> - A
             };
 
             //MyWord[] words =
