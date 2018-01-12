@@ -18,7 +18,7 @@ namespace LR
         /// </summary>
         /// <param name="text">Текст сообщения</param>
         public delegate void PrintDelegate(string text);
-        
+
         public event PrintDelegate PrintCompileInfo = (str) => { };
         public event PrintDelegate PrintCompileResult = (str) => { };
         public event PrintDelegate PrintMessage = (str) => { };
@@ -63,7 +63,7 @@ namespace LR
             PrintCompileInfo.Invoke(@"Магазин:" + s2 + '\n');
             string s3 = "";
 
-            foreach(var rule in rulesFounded)
+            foreach (var rule in rulesFounded)
             {
                 s3 = s3 + (rule + 1) + " ";
             }
@@ -80,15 +80,17 @@ namespace LR
         {
             ruleNumber = ruleNumber + 1;
             if (ruleNumber == 1)
-                ArrS[ts1 - 5].T = "for ( " + ArrS[ts1 - 5].T + ArrS[ts1 - 4].T + "; " + ArrS[ts1 - 2].T + "; " + ArrS[ts1 - 1].T + " ) {" + ArrS[ts1].T + "} ;";
+                ArrS[ts1 - 2].T = $"{ArrS[ts1 - 1].Value} ( {ArrS[ts1 - 2].T} ) {{{ArrS[ts1].T};}}";
             if (ruleNumber == 2)
-                ArrS[ts1 - 6].T = "for ( " + ArrS[ts1 - 6].T + ArrS[ts1 - 5].T + "; " + ArrS[ts1 - 3].T + "; " + ArrS[ts1 - 2].T + " ) {" + ArrS[ts1 - 1].T + "} ;" + Environment.NewLine + ArrS[ts1].T;
+                ArrS[ts1 - 3].T =
+                    $"{ArrS[ts1 - 2].Value} ( {ArrS[ts1 - 3].T} ) {{{ArrS[ts1 - 1].T};}}{Environment.NewLine}{ArrS[ts1].T}";
             if (ruleNumber == 4)
-                ArrS[ts1 - 4].T = ArrS[ts1 - 3].Value + "[ " + ArrS[ts1 - 1].T + " ] = ";
+                ArrS[ts1 - 1].T = $"{ArrS[ts1 - 1].T} {ArrS[ts1].T}";
             if (ruleNumber == 3)
-                ArrS[ts1 - 1].T = ArrS[ts1].Value + " = ";
+                ArrS[ts1 - 1].T = $"{ArrS[ts1 - 1].T} {ArrS[ts1].T}";
             if (ruleNumber == 6)
-                ArrS[ts1 - 1].T = ArrS[ts1 - 1].T + " " + ArrS[ts1].T;
+                //ArrS[ts1 - 1].T = $"{ArrS[ts1 - 1].Value} {ArrS[ts1].T}";
+                ArrS[ts1 - 1].T = $"{ArrS[ts1].Value} =";
             if (ruleNumber == 8)
                 ArrS[ts1].T = ArrS[ts1].Value;
             if (ruleNumber == 7)
@@ -98,11 +100,11 @@ namespace LR
             if (ruleNumber == 10)
                 ArrS[ts1 - 1].T = "sqrt ( " + ArrS[ts1].T + " )";
             if (ruleNumber == 12)
-                ArrS[ts1 - 1].T = ArrS[ts1 - 1].T + " " + ArrS[ts1].T;
+                ArrS[ts1 - 1].T = ArrS[ts1].T + " == ";
             if (ruleNumber == 9)
-                ArrS[ts1 - 3].T = ArrS[ts1 - 3].Value + "[ " + ArrS[ts1 - 1].T + " ] ";
+                ArrS[ts1].T = $"{ArrS[ts1].Value}";
             if (ruleNumber == 15)
-                ArrS[ts1 - 1].T = ArrS[ts1].T + " != ";
+                ArrS[ts1 - 1].T = $"{ArrS[ts1].T} == ";
             if (ruleNumber == 16)
                 ArrS[ts1 - 1].T = ArrS[ts1].T + " ^ ";
             if (ruleNumber == 13)
@@ -117,23 +119,23 @@ namespace LR
             // Коллекций номеров правил
             List<int> rulesFounded = new List<int>();
             int currentOut = 0;
-            ArrS[currentOut].Number = 18;
+            ArrS[currentOut].Number = 19;
             ArrS[currentOut].Value = "$";
             PrintInfo(currentOut, rulesFounded, splittedWords);
             while (splittedWords.Count > 0)
             {
                 CompileActions action = CompileActions.Start;
                 MyWord word = splittedWords.Peek();
-                if (word.Number == 18)
+                if (word.Number == 19)
                 {
                     if (currentOut == 1)
                     {
                         // Сначала символ в конце, потом в начале
                         // Смотрится, что бы первым был символ $ а потом цепочка S
                         // Если условие выполнено, то это конец разбора
-                        if ((ArrS[currentOut].Number == 0) && (ArrS[currentOut - 1].Number == 18))
+                        if ((ArrS[currentOut].Number == 0) && (ArrS[currentOut - 1].Number == 19))
                         {
-                            PrintInfo(currentOut, rulesFounded, splittedWords);
+                            //PrintInfo(currentOut, rulesFounded, splittedWords);
                             return;
                         }
                     }
@@ -142,12 +144,13 @@ namespace LR
                 int row = ArrS[currentOut].Number;
                 int col = word.Number;
 
-                if ((RuleRuleTable[row, col] == 1 && action != CompileActions.Error) || (RuleRuleTable[row, col] == 2 && action != CompileActions.Error))
+                if ((RuleRuleTable[row, col] == 1 && action != CompileActions.Error) ||
+                    (RuleRuleTable[row, col] == 2 && action != CompileActions.Error))
                 {
                     currentOut++;
                     MyWord tmpWord = splittedWords.Dequeue();
                     ArrS[currentOut] = tmpWord;
-                    PrintInfo(currentOut, rulesFounded, splittedWords);
+                    //PrintInfo(currentOut, rulesFounded, splittedWords);
                     action = CompileActions.Next;
                 }
                 if ((RuleRuleTable[row, col] == 3) && action != CompileActions.Next && action != CompileActions.Error)
@@ -155,7 +158,8 @@ namespace LR
                     // Количество символов, для свертки, ищем правило, где 2 символа грамматики в нем
                     int countOfWords = 0;
                     // Ищется правило для 2 последних символов в выходной цепочке
-                    while (RuleRuleTable[ArrS[currentOut - countOfWords].Number, ArrS[currentOut - countOfWords + 1].Number] != 1)
+                    while (RuleRuleTable[ArrS[currentOut - countOfWords].Number,
+                               ArrS[currentOut - countOfWords + 1].Number] != 1)
                     {
                         countOfWords++;
                     }
@@ -165,6 +169,7 @@ namespace LR
                         if (Rules[ruleNumber].CountOfWords == countOfWords)
                         {
                             int countOfRules = 0;
+                            // Можно изменить способ сверки
                             for (var i = 0; i < countOfWords; i++)
                             {
                                 // Сверяет последовательность в цепочке с прпвилами из списка правил
@@ -183,7 +188,7 @@ namespace LR
                                 ArrS[currentOut].Number = Rules[ruleNumber].RuleNumber - 1;
                                 ArrS[currentOut].Value = Words[ArrS[currentOut].Number].Value;
                                 rulesFounded.Add(ruleNumber);
-                                PrintInfo(currentOut, rulesFounded, splittedWords);
+                                //PrintInfo(currentOut, rulesFounded, splittedWords);
                                 action = CompileActions.Next;
                                 break;
                             }
@@ -197,6 +202,7 @@ namespace LR
                     //TODO: return
                     return;
                 }
+                PrintInfo(currentOut, rulesFounded, splittedWords);
                 PrintCompileResult.Invoke(ArrS[currentOut].T);
             }
         }
@@ -222,7 +228,8 @@ namespace LR
         public int IsThisNumber(string str, int startPos, int endPos, Queue<MyWord> splittedWords)
         {
             //Проверка булевых переменных
-            if (str.Substring(startPos, endPos + 1 - startPos) == " true" || str.Substring(startPos, endPos + 1 - startPos) == " false")
+            if (str.Substring(startPos, endPos + 1 - startPos) == " true" ||
+                str.Substring(startPos, endPos + 1 - startPos) == " false")
             {
                 splittedWords.Enqueue(new MyWord(17, str.Substring(startPos, endPos + 1 - startPos)));
                 return 1;
@@ -242,7 +249,8 @@ namespace LR
 
                     return 1;
                 }
-                PrintMessage.Invoke(@"Нужно вводить вещественные" + '\n' + @" числа с порядком!" + '\r' + @"Ошибка --> " + str.Substring(startPos, endPos + 1 - startPos));
+                PrintMessage.Invoke(@"Нужно вводить вещественные" + '\n' + @" числа с порядком!" + '\r' +
+                                    @"Ошибка --> " + str.Substring(startPos, endPos + 1 - startPos));
                 return -1;
             }
             return 0;
@@ -307,7 +315,8 @@ namespace LR
                             int dop1 = IsThisNumber(str, nach, i - 1, splittedWords);
                             if (dop1 == 0)
                             {
-                                if ((str.Substring(nach + 1, i - nach - 1)).Length <= 8 && (str.Substring(nach + 1, i - nach - 1)).Length > 0)
+                                if ((str.Substring(nach + 1, i - nach - 1)).Length <= 8 &&
+                                    (str.Substring(nach + 1, i - nach - 1)).Length > 0)
                                 {
                                     splittedWords.Enqueue(new MyWord(16, str.Substring(nach, i + 1 - nach)));
                                 }
@@ -316,12 +325,15 @@ namespace LR
                                     if ((str.Substring(nach + 1, i - nach - 1)).Length > 8)
                                     {
                                         fail = true;
-                                        PrintMessage.Invoke(@"Длина идентификатора не может быть больше 8 символов!" + '\n' + @"Ошибка --> " + str.Substring(nach, i + 1 - nach));
+                                        PrintMessage.Invoke(@"Длина идентификатора не может быть больше 8 символов!" +
+                                                            '\n' + @"Ошибка --> " + str.Substring(nach, i + 1 - nach));
                                     }
                                     if ((str.Substring(nach + 1, i - nach - 1)).Length == 0)
                                     {
                                         fail = true;
-                                        PrintMessage.Invoke(@"Длина идентификатора не может быть меньше 0 символов!" + '\n' + @"Сивмол № " + (i + 1).ToString() + @" является пробелом.");
+                                        PrintMessage.Invoke(@"Длина идентификатора не может быть меньше 0 символов!" +
+                                                            '\n' + @"Сивмол № " + (i + 1).ToString() +
+                                                            @" является пробелом.");
                                     }
                                 }
                             }
@@ -339,7 +351,7 @@ namespace LR
             }
             if (!fail)
             {
-                splittedWords.Enqueue(new MyWord(18, "$"));
+                splittedWords.Enqueue(new MyWord(19, "$"));
                 return splittedWords;
             }
             return null;
@@ -350,7 +362,7 @@ namespace LR
             //TODO: Убрать очистку
             for (var i = 0; i < ArrS.Length; i++)
             {
-                ArrS[i]= new MyWord(0, "");
+                ArrS[i] = new MyWord(0, "");
             }
 
             Queue<MyWord> words = Up(str);
@@ -358,7 +370,15 @@ namespace LR
             {
                 Algorithm(words);
             }
-            
+
+        }
+
+        public void Run(object obj)
+        {
+            if (obj is string str)
+            {
+                Run(str);
+            }
         }
     }
 }
