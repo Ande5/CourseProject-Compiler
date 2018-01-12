@@ -42,8 +42,8 @@
   <ItemGroup>
     <Compile Include="CompileActions.cs" />
     <Compile Include="Data\UpTableLoader.cs" />
-    <Compile Include="MyRule.cs" />
-    <Compile Include="MyWord.cs" />
+    <Compile Include="Rule.cs" />
+    <Compile Include="Word.cs" />
     <Compile Include="UpAnalysis.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

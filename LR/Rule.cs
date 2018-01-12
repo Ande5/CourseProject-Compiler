@@ -3,9 +3,9 @@
     /// <summary>
     /// Структура правила
     /// </summary>
-    public struct MyRule
+    public struct Rule
     {
-        public MyRule(int ruleNumber, int[] ruleList)
+        public Rule(int ruleNumber, int[] ruleList)
         {
             RuleNumber = ruleNumber;
             RuleList = ruleList;
