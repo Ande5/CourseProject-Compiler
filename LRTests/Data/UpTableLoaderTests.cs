@@ -1,4 +1,6 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using System;
+using LR.Data.Up;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace LR.Data.Tests
 {
@@ -31,19 +33,21 @@ namespace LR.Data.Tests
                 {0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}
             };
 
-
             UpTableLoader loader = new UpTableLoader();
 
-            int[,] readedTable = loader.LoadTable("table.txt");
+            int[,] readedTable = loader.LoadTable("tableCheck.txt");
 
-            for (int i = 0; i < table.Length; i++)
+            int dim = readedTable.GetUpperBound(0);
+
+            for (int i = 0; i <= dim; i++)
             {
-                for (int j = 0; j < table.Length; j++)
+                for (int j = 0; j <= dim; j++)
                 {
-                    Assert.AreEqual(table[i,j], readedTable[i, j], 0, $"Not equal in [{i},{j}]");
+                    Assert.AreEqual(table[i, j], readedTable[i, j], 0, $"Not equal in [{i},{j}]");
                 }
             }
-
         }
+
+
     }
 }

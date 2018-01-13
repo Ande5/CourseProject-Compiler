@@ -1,14 +1,15 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace LR.Data
+namespace LR.Data.Up
 {
     public class UpTableLoader
     {
+        /// <summary>
+        /// Загружает управляющую таблицу из файла
+        /// </summary>
+        /// <param name="path">Пкть до файла управляющей таблицы</param>
+        /// <returns>Управляющая таблица</returns>
         public int[,] LoadTable(string path)
         {
             int[,] arr;

@@ -1,0 +1,17 @@
+S -> C if W
+S -> C if W S
+C -> L A
+W -> X A
+W -> X L
+X -> := id
+X -> := id [ A ]
+A -> id
+A -> const
+A -> id [ A ]
+A -> sqr A
+A -> R A
+L -> = A
+L -> ! A
+L -> > A
+L -> < A
+R -> - A
