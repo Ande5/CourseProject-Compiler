@@ -1,16 +1,26 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
+using LR.Data;
+using LR.Data.Up;
 
 namespace LR
 {
-    public class UpAnalysis
+    public class LrParser
     {
-        public UpAnalysis(Rule[] ruleses, Word[] words, int[,] ruleTable, int countOfRules)
+        public LrParser(Rule[] ruleses, Word[] words, int[,] ruleTable, int countOfRules)
         {
             Rules = ruleses;
             Words = words;
             RuleRuleTable = ruleTable;
             CountOfRules = countOfRules;
+        }
+
+        public LrParser(LrParserLoader loader)
+        {
+            Words = loader.Words;
+            Rules = loader.Rules;
+            RuleRuleTable = loader.ControlTable;
         }
 
         /// <summary>
@@ -111,7 +121,10 @@ namespace LR
             if (ruleNumber == 13)
                 arrSNode.Value.Temp = $"{arrSNode.Next.Value.Temp} ==";
             if (ruleNumber == 9)
-                arrSNode.Value.Temp = $"{arrSNode.Value.Value}";
+                //arrSNode.Value.Temp = $"{arrSNode.Value.Value}";
+                arrSNode.Value.Temp = $"{arrSNode.Value.Temp}";
+            if (ruleNumber == 10)
+                arrSNode.Value.Temp = $"{arrSNode.Value.Temp}{arrSNode.Next.Value.Value}{arrSNode.Next.Next.Value.Temp}{arrSNode.Next.Next.Next.Value.Value}";
             //if (ruleNumber == 15)
             //    ArrS[ts1 - 1].Temp = $"{ArrS[ts1].Temp} == ";
             //if (ruleNumber == 16)
@@ -125,15 +138,13 @@ namespace LR
 
         public void Algorithm(Queue<Word> splittedWords)
         {
-            //TODO: Изменить получение списка символов
-            Word lastWord = Words[Words.Length - 1];
             // Коллекций номеров правил
             List<int> rulesFound = new List<int>();
             //TODO: XML док
             LinkedList<Word> stack = new LinkedList<Word>();
 
             //TODO: Избавиться от зависимости последнего символа
-            stack.AddLast(lastWord);
+            stack.AddLast(Words.Last());
 
             PrintInfo(stack, rulesFound, splittedWords);
 
@@ -145,14 +156,14 @@ namespace LR
                 Word word = splittedWords.Peek();
 
                 // Проверяем, является ли последний символ символом конца цепочки
-                if (word.Number == lastWord.Number)
+                if (word.Number == Words.Last().Number)
                 {
                     if (stack.Count == 2)
                     {
                         // Если последний символ в стеке - символ цепочки S, а первый - символ клнца цепочки
                         // Тогда разбор окончен успешно
                         // TODO: Убрать первый сивол, заменить
-                        if ((stack.Last.Value.Number == 0) && (stack.First.Value.Number == lastWord.Number))
+                        if ((stack.Last.Value.Number == Words.First().Number) && (stack.First.Value.Number == Words.Last().Number))
                         {
                             PrintCompileResult.Invoke(stack.Last.Value.Temp);
                             return;
@@ -230,9 +241,11 @@ namespace LR
                                 // Производим покпиляцию по правилу
                                 MyCompil(ruleNumber, srchNode);
 
-                                // Присваиваем номер и символ правила
-                                node.Value.Number = Rules[ruleNumber].RuleNumber - 1;
-                                node.Value.Value = Words[node.Value.Number].Value;
+                                // Присваиваем номер и символ правила, которое использовали
+                                int collapsedRuleNumber = Rules[ruleNumber].RuleNumber;
+
+                                node.Value.Number = collapsedRuleNumber;
+                                node.Value.Value = Words[collapsedRuleNumber].Value;
 
                                 // Добаляем использованное правило в коллекцию правил
                                 rulesFound.Add(ruleNumber);
@@ -348,69 +361,114 @@ namespace LR
         /// <returns>Очередь распарщенных слов</returns>
         public Queue<Word> Up(string str)
         {
+
+            string[] list = str.Split(' ');
+
+
+
+            Queue<string> words = new Queue<string>(list);
+
+            //if (words.Contains("const"))
+            //{
+            //    throw new Exception("const - служебное слово");
+            //}
+
             // Коллекция строк, которые были получены в результате парсинга строки
             Queue<Word> splittedWords = new Queue<Word>();
 
-            str += " ";
-            int nach = 0;
-            int probel = 1;
-
-            // Флаг ошибки при компиляции
-            bool fail = false;
-
-            for (var i = 0; i < str.Length; i++)
+            while (words.Count > 0)
             {
-                if (str[i] == ' ')
-                    if (probel == 0)
-                    {
-                        probel = 1;
-                        // Если вернулся 0, то будет производиться поиск на число или булевский тип
-                        if (IsThisOperator(str, nach, i - 1, splittedWords) == 0)
-                        {
-                            int dop1 = IsThisNumber(str, nach, i - 1, splittedWords);
-                            if (dop1 == 0)
-                            {
-                                if ((str.Substring(nach + 1, i - nach - 1)).Length <= 8 &&
-                                    (str.Substring(nach + 1, i - nach - 1)).Length > 0)
-                                {
-                                    splittedWords.Enqueue(new Word(16, str.Substring(nach, i + 1 - nach)));
-                                }
-                                else
-                                {
-                                    if ((str.Substring(nach + 1, i - nach - 1)).Length > 8)
-                                    {
-                                        fail = true;
-                                        PrintMessage.Invoke(@"Длина идентификатора не может быть больше 8 символов!" +
-                                                            '\n' + @"Ошибка --> " + str.Substring(nach, i + 1 - nach));
-                                    }
-                                    if ((str.Substring(nach + 1, i - nach - 1)).Length == 0)
-                                    {
-                                        fail = true;
-                                        PrintMessage.Invoke(@"Длина идентификатора не может быть меньше 0 символов!" +
-                                                            '\n' + @"Сивмол № " + (i + 1).ToString() +
-                                                            @" является пробелом.");
-                                    }
-                                }
-                            }
-                            if (dop1 == -1)
-                            {
-                                fail = true;
-                            }
-                        }
-                    }
-                if (!fail)
+                string word = words.Dequeue();
+
+                Word foundWord = Words.FirstOrDefault(item => item.Value == word && item.Number >= CountOfRules && item.Value != "const" && item.Value != "id");
+
+                if (foundWord != null)
                 {
-                    if (probel == 1) nach = i;
-                    probel = 0;
+                    splittedWords.Enqueue(new Word(foundWord.Number, foundWord.Value));
                 }
+                else
+                {
+                    int nuber;
+                    //TODO: true или false в качестве const
+                    if (int.TryParse(word, out nuber))
+                    {
+                        nuber = Convert.ToInt32(word, 8);
+                        splittedWords.Enqueue(new Word(12, "const") {Temp = nuber.ToString()});
+                    }
+                    else
+                    {
+                        splittedWords.Enqueue(new Word(9, "id") { Temp = word });
+                    }
+                }
+
+                
+
             }
-            if (!fail)
-            {
-                //TODO: Переделать загрузку символов
-                splittedWords.Enqueue(Words[Words.Length - 1]);
-                return splittedWords;
-            }
-            return null;
+            splittedWords.Enqueue(new Word(19, "$"));
+            //TODO: Не забыть поставить символ конца цепочки
+            return splittedWords;
+
+
+            //str += " ";
+            //int nach = 0;
+            //int probel = 1;
+
+            //// Флаг ошибки при компиляции
+            //bool fail = false;
+
+            //for (var i = 0; i < str.Length; i++)
+            //{
+            //    if (str[i] == ' ')
+            //        if (probel == 0)
+            //        {
+            //            probel = 1;
+            //            // Если вернулся 0, то будет производиться поиск на число или булевский тип
+            //            if (IsThisOperator(str, nach, i - 1, splittedWords) == 0)
+            //            {
+            //                int dop1 = IsThisNumber(str, nach, i - 1, splittedWords);
+            //                if (dop1 == 0)
+            //                {
+            //                    if ((str.Substring(nach + 1, i - nach - 1)).Length <= 8 &&
+            //                        (str.Substring(nach + 1, i - nach - 1)).Length > 0)
+            //                    {
+            //                        splittedWords.Enqueue(new Word(16, str.Substring(nach, i + 1 - nach)));
+            //                    }
+            //                    else
+            //                    {
+            //                        if ((str.Substring(nach + 1, i - nach - 1)).Length > 8)
+            //                        {
+            //                            fail = true;
+            //                            PrintMessage.Invoke(@"Длина идентификатора не может быть больше 8 символов!" +
+            //                                                '\n' + @"Ошибка --> " + str.Substring(nach, i + 1 - nach));
+            //                        }
+            //                        if ((str.Substring(nach + 1, i - nach - 1)).Length == 0)
+            //                        {
+            //                            fail = true;
+            //                            PrintMessage.Invoke(@"Длина идентификатора не может быть меньше 0 символов!" +
+            //                                                '\n' + @"Сивмол № " + (i + 1).ToString() +
+            //                                                @" является пробелом.");
+            //                        }
+            //                    }
+            //                }
+            //                if (dop1 == -1)
+            //                {
+            //                    fail = true;
+            //                }
+            //            }
+            //        }
+            //    if (!fail)
+            //    {
+            //        if (probel == 1) nach = i;
+            //        probel = 0;
+            //    }
+            //}
+            //if (!fail)
+            //{
+            //    //TODO: Переделать загрузку символов
+            //    splittedWords.Enqueue(Words[Words.Length - 1]);
+            //    return splittedWords;
+            //}
+            //return null;
         }
 
         public void Run(string str)

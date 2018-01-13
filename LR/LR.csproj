@@ -42,10 +42,11 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CompileActions.cs" />
-    <Compile Include="Data\UpTableLoader.cs" />
-    <Compile Include="Rule.cs" />
-    <Compile Include="Word.cs" />
-    <Compile Include="UpAnalysis.cs" />
+    <Compile Include="Data\Up\LrParserLoader.cs" />
+    <Compile Include="Data\Up\UpTableLoader.cs" />
+    <Compile Include="Types\Rule.cs" />
+    <Compile Include="Types\Word.cs" />
+    <Compile Include="LRParser.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
